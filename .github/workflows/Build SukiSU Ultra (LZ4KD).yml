@@ -143,6 +143,22 @@ jobs:
           cp ../../SukiSU_patch/other/zram/zram_patch/${{ github.event.inputs.KERNEL_VERSION }}/lz4kd.patch ./
           patch -p1 -F 3 < lz4kd.patch || true
 
+      # LXC-DOCKER-PATCHES
+      - name: Settings LXC-DOCKER-PATCHES
+        run: |
+          cd kernel_workspace
+          git clone https://github.com/wings110/ace3pro-patches.git
+          cd kernel_platform
+          cp ../ace3pro-patches/* ./
+          echo "正在打LXC-DOCKER应用补丁"
+          patch -p1 -F 3 < version-ignore.patch
+          patch -p1 -F 3 < overlayfs.patch
+          patch -p1 -F 3 < modules.bzl.patch
+          patch -p1 -F 3 < defconfig.patch
+          patch -p1 -F 3 < cgroup-prefix.patch
+          git add -A
+          git commit -m "Settings LXC-DOCKER-PATCHES"
+
       - name: Apply new hook and add configuration
         run: |
           cd kernel_workspace/kernel_platform
