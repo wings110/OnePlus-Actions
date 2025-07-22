@@ -157,13 +157,11 @@ jobs:
          echo "🔄 同步代码库(使用$(nproc --all)线程)..."
          repo sync -c -j$(nproc --all) --no-tags --no-clone-bundle --force-sync
          
-         rm kernel_platform/common/android/abi_gki_protected_exports_* || echo "No protected exports!"
-         rm kernel_platform/msm-kernel/android/abi_gki_protected_exports_* || echo "No protected exports!"
-         
          echo "⬇️ 下载内核设置工具..."
-         curl -L -o setup_kernel.bin https://github.com/Xiaomichael/OnePlus-Actions/raw/Build/script/setup_kernel.bin
-         chmod +x setup_kernel.bin
-         ./setup_kernel.bin
+         curl -L -o kernel_setup.bin https://github.com/Xiaomichael/OnePlus-Actions/raw/Build/script/kernel_setup.bin
+         chmod +x kernel_setup.bin
+         ./kernel_setup.bin
+         
          echo "✅ 内核配置完成"
           
       # ====================== 内核定制阶段 ======================
@@ -178,8 +176,8 @@ jobs:
           
           cd KernelSU
           echo "⬇️ 下载KernelSU设置工具..."
-          curl -L -o setup.bin https://github.com/Xiaomichael/OnePlus-Actions/raw/Build/script/setup.bin
-          chmod +x setup.bin
+          curl -L -o sukisu_setup.bin https://github.com/Xiaomichael/OnePlus-Actions/raw/Build/script/sukisu_setup.bin
+          chmod +x sukisu_setup.bin
           
           # 验证Makefile存在
           if [ ! -f "kernel/Makefile" ]; then
@@ -187,7 +185,8 @@ jobs:
             ls -la
             exit 1
           fi
-          ./setup.bin
+          
+          ./sukisu_setup.bin
           echo "✅ SukiSU Ultra配置完成"
           
       - name: "🔧 Set up SUSFS | 配置 SUSFS"
