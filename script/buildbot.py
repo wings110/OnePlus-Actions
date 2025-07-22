@@ -6,12 +6,14 @@ from telethon import TelegramClient
 API_ID = 611335
 API_HASH = "d524b414d21f4d37f08684c1df41ac9c"
 
+
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 CHAT_ID = os.environ.get("CHATID")
 MESSAGE_THREAD_ID = os.environ.get("MESSAGE_THREAD_ID")
 DEVICE = os.environ.get("DEVICE")
 KPM= os.environ.get("KPM")
 lz4kd= os.environ.get("LZ4KD")
+BBR= os.environ.get("BBR")
 MSG_TEMPLATE = """
 **New Build Published!**
 #{device}
@@ -19,7 +21,8 @@ MSG_TEMPLATE = """
 kernelver: {kernelversion}
 KsuVersion: {Ksuver}
 KPM: {kpm}
-lz4kd: {Lz4kd} lz4&zstd: {lz4_zstd}
+Lz4kd: {lz4kd} Lz4&zstd: {lz4_zstd}
+BBR: {BBR}
 ```
 十分感谢yc佬对本自动推送bot做出的贡献❤️
 Please Join Our Group! tg @gki_kernels_xiaoxiaow
@@ -31,9 +34,10 @@ def get_caption():
         device=DEVICE,
         kernelversion=kernelversion,
         kpm=KPM,
-        Lz4kd=lz4kd,
+        lz4kd=lz4kd,
         Ksuver=ksuver,
         lz4_zstd=check_lz4_zstd(),
+        BBR=BBR,
     )
     if len(msg) > 1024:
         return f"{DEVICE}{kernelversion}"
@@ -92,15 +96,16 @@ def get_versions():
     kernelversion=get_kernel_versions()
     os.chdir(os.getcwd()+"/../KernelSU")
     ksuver=os.popen("echo $(git describe --tags $(git rev-list --tags --max-count=1))-$(git rev-parse --short HEAD)@$(git branch --show-current)").read().strip()
+    ksuver+=f' ({os.environ.get("KSUVER")})'
     os.chdir(current_work)
 
 def check_lz4_zstd():
     global lz4kd
-    if lz4kd == "Off":
-        return "On"
+    if lz4kd == "Close":
+        return "Open"
     else:
-        return "Off"
-    return "Off"
+        return "Close"
+    return "Close"
 
 async def main():
     print("[+] Uploading to telegram")
