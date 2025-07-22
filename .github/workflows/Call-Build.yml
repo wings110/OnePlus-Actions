@@ -424,13 +424,6 @@ jobs:
         run: |
           find -name zram.ko
           find -name crypto_zstdn.ko
-          
-      - name: "📤 Upload zram.ko | 上传 zram.ko"
-        if: ${{ github.event.inputs.lz4kd == 'On' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: zram.ko
-          path: ./kernel_workspace/kernel_platform/common/out/drivers/block/zram/zram.ko
 
       # - name: "📦 Package files | 打包文件"
         # run: |
