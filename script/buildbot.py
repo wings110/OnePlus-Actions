@@ -101,11 +101,11 @@ def get_versions():
 
 def check_lz4_zstd():
     global lz4kd
-    if lz4kd == "Close":
-        return "Open"
+    if lz4kd == "Off":
+        return "On"
     else:
-        return "Close"
-    return "Close"
+        return "Off"
+    return "Off"
 
 async def main():
     print("[+] Uploading to telegram")
