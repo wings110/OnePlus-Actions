@@ -150,19 +150,19 @@ jobs:
 
       - name: "⬇️ Clone Kernel Source | 克隆内核源码"
         run: |
-         echo "🌐 正在初始化内核仓库..."
-         mkdir kernel_workspace && cd kernel_workspace
+          echo "🌐 正在初始化内核仓库..."
+          mkdir kernel_workspace && cd kernel_workspace
          
-         repo init -u https://github.com/Xiaomichael/kernel_manifest.git -b refs/heads/oneplus/${{ github.event.inputs.CPU }} -m ${{ github.event.inputs.FEIL }}.xml --depth=1
-         echo "🔄 同步代码库(使用$(nproc --all)线程)..."
-         repo sync -c -j$(nproc --all) --no-tags --no-clone-bundle --force-sync
+          repo init -u https://github.com/Xiaomichael/kernel_manifest.git -b refs/heads/oneplus/${{ github.event.inputs.CPU }} -m ${{ github.event.inputs.FEIL }}.xml --depth=1
+          echo "🔄 同步代码库(使用$(nproc --all)线程)..."
+          repo sync -c -j$(nproc --all) --no-tags --no-clone-bundle --force-sync
+          
+          echo "⬇️ 下载内核设置工具..."
+          curl -L -o kernel_setup.bin https://github.com/Xiaomichael/OnePlus-Actions/raw/Build/script/kernel_setup.bin
+          chmod +x kernel_setup.bin
+          ./kernel_setup.bin
          
-         echo "⬇️ 下载内核设置工具..."
-         curl -L -o kernel_setup.bin https://github.com/Xiaomichael/OnePlus-Actions/raw/Build/script/kernel_setup.bin
-         chmod +x kernel_setup.bin
-         ./kernel_setup.bin
-         
-         echo "✅ 内核配置完成"
+          echo "✅ 内核配置完成"
          
       # ====================== 内核定制阶段 ======================
       - name: "⚡ Setup SukiSU Ultra | 配置SukiSU Ultra"
@@ -196,7 +196,6 @@ jobs:
           git clone https://gitlab.com/simonpunk/susfs4ksu.git -b gki-${{ github.event.inputs.ANDROID_VERSION }}-${{ github.event.inputs.KERNEL_VERSION }}
           git clone https://github.com/Xiaomichael/kernel_patches.git
           git clone https://github.com/ShirkNeko/SukiSU_patch.git
-          # git clone https://github.com/Lama3L9R/sukisu-quick-setup.git
           
           cd kernel_platform
           echo "📝 复制补丁文件..."
@@ -242,9 +241,6 @@ jobs:
             patch -p1 -F 3 < lz4k_oplus.patch || true
           fi
           
-          # Add support for zakosu
-          # cp ../sukisu-quick-setup/patches/01-add-zakosu-manager.patch ./common/
-          # patch -p1 -F 3 < 01-add-zakosu-manager.patch
           echo "✅ 所有补丁应用完成"
 
       - name: "⚙️ Configure Kernel Options | 配置内核选项"
@@ -298,12 +294,13 @@ jobs:
           
           if [ "${{ github.event.inputs.KERNEL_VERSION }}" == "6.1" ]; then
             # Add O2 config
-            echo "📦 为6.1加入O2优化"
+            echo "📦 为6.1加入O2优化..."
             echo "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=y" >> ./common/arch/arm64/configs/gki_defconfig
           fi
 
           if [ "${{ github.event.inputs.proxy }}" == "On" ]; then
             # Add proxy config
+            echo "📦 加入代理优化..."
             echo "CONFIG_BPF_STREAM_PARSER=y" >> ./common/arch/arm64/configs/gki_defconfig
             echo "CONFIG_NETFILTER_XT_MATCH_ADDRTYPE=y" >> ./common/arch/arm64/configs/gki_defconfig
             echo "CONFIG_NETFILTER_XT_SET=y" >> ./common/arch/arm64/configs/gki_defconfig
@@ -353,6 +350,7 @@ jobs:
             sudo apt install libelf-dev
             cd kernel_workspace/kernel_platform/common
             make -j$(nproc --all) LLVM=1 ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CC="ccache clang" RUSTC=../../prebuilts/rust/linux-x86/1.73.0b/bin/rustc PAHOLE=../../prebuilts/kernel-build-tools/linux-x86/bin/pahole LD=ld.lld HOSTLD=ld.lld O=out KCFLAGS+=-O2 gki_defconfig all
+            make -j$(nproc --all) LLVM=1 ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CC="ccache clang" RUSTC=../../prebuilts/rust/linux-x86/1.73.0b/bin/rustc PAHOLE=../../prebuilts/kernel-build-tools/linux-x86/bin/pahole LD=ld.lld HOSTLD=ld.lld O=out KCFLAGS+=-O2 Image
             
           elif [ "${{ github.event.inputs.KERNEL_VERSION }}" == "5.15" ]; then
             export PATH="$GITHUB_WORKSPACE/kernel_workspace/kernel_platform/prebuilts/clang/host/linux-x86/clang-r450784e/bin:$PATH"
@@ -443,7 +441,7 @@ jobs:
             # zip -q -r "../${{ steps.set_name.outputs.ARTIFACT_NAME }}.zip" ./*
             # cd ..
             # cat > release.txt << 'EOF'
-            # ${{ github.event.inputs.FEIL }}
+            # \# ${{ github.event.inputs.FEIL }}
             # ```
             # 构建时间：$(TZ=Asia/Shanghai date)
             # 内核版本：${{ github.event.inputs.ANDROID_VERSION}}-${{ github.event.inputs.KERNEL_VERSION }}
@@ -454,7 +452,6 @@ jobs:
             # EOF
 
       # - name: "📤 Upload to telegram | 上传至Telegram群组"
-        # if: ${{secrets.BOT_TOKEN != ""}}
         # uses: puernya/tg-bot-upload@v1
         # with:
           # bot-id: ${{ secrets.BOT_TOKEN }}
@@ -466,7 +463,7 @@ jobs:
       - name: "🤖 Get bot script | 获取 bot 脚本"
         uses: actions/checkout@v4
         with:
-         path: bot
+          path: bot
 
       - name: "📤 Upload to telegram | 上传至Telegram群组"
         run: |
