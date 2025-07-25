@@ -14,11 +14,14 @@ DEVICE = os.environ.get("DEVICE")
 KPM= os.environ.get("KPM")
 lz4kd= os.environ.get("LZ4KD")
 BBR= os.environ.get("BBR")
+KSU_VAR = os.environ.get("KSU_VAR")
+
 MSG_TEMPLATE = """
 **New Build Published!**
 #{device}
 ```Kernel Info
 kernelver: {kernelversion}
+KSU_VAR: {KSU_VAR}
 KsuVersion: {Ksuver}
 KPM: {kpm}
 Lz4kd: {lz4kd} Lz4&zstd: {lz4_zstd}
@@ -36,6 +39,7 @@ def get_caption():
         kpm=KPM,
         lz4kd=lz4kd,
         Ksuver=ksuver,
+        KSU_VAR=KSU_VAR,
         lz4_zstd=check_lz4_zstd(),
         BBR=BBR,
     )
@@ -90,11 +94,15 @@ def get_kernel_versions():
     return f"{version}.{patchlevel}.{sublevel}"
 
 def get_versions():
-    global kernelversion,ksuver
+    global kernelversion,ksuver,KSU_VAR
+    if KSU_VAR == "NEXT":
+        ksu_folder="KernelSU-Next"
+    else:
+        ksu_folder="KernelSU"
     current_work=os.getcwd()
     os.chdir(current_work+"/kernel_workspace/kernel_platform/common") #除非next
     kernelversion=get_kernel_versions()
-    os.chdir(os.getcwd()+"/../KernelSU")
+    os.chdir(os.getcwd()+f"/../{ksu_folder}")
     ksuver=os.popen("echo $(git describe --tags $(git rev-list --tags --max-count=1))-$(git rev-parse --short HEAD)@$(git branch --show-current)").read().strip()
     ksuver+=f' ({os.environ.get("KSUVER")})'
     os.chdir(current_work)
