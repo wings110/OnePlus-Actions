@@ -40,9 +40,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-        #- FEIL: 'oneplus_10t'
-        #- FEIL: 'oneplus_11r'
-        #- FEIL: 'oneplus_ace2'
+        # - FEIL: 'oneplus_10t'
+        # - FEIL: 'oneplus_11r'
+        # - FEIL: 'oneplus_ace2'
         - FEIL: 'oneplus_ace_pro'
         
     uses: ./.github/workflows/Call_Build.yml

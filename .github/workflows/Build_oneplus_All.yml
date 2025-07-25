@@ -59,15 +59,15 @@ jobs:
       # bbr: "Off"
       # proxy: "On"
 
-  sm7675:
-    uses: ./.github/workflows/kernel-sm7675.yml
-    secrets: inherit
-    with:
-      CPU: "sm7675"
-      CPUD: "pineapple"
-      ANDROID_VERSION: "android14"
-      KERNEL_VERSION: "6.1"
-      KPM: "Off"
-      lz4kd: "Off"
-      bbr: "Off"
-      proxy: "On"
+  # sm7675:
+    # uses: ./.github/workflows/kernel-sm7675.yml
+    # secrets: inherit
+    # with:
+      # CPU: "sm7675"
+      # CPUD: "pineapple"
+      # ANDROID_VERSION: "android14"
+      # KERNEL_VERSION: "6.1"
+      # KPM: "Off"
+      # lz4kd: "Off"
+      # bbr: "Off"
+      # proxy: "On"
