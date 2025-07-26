@@ -43,7 +43,7 @@ jobs:
         - FEIL: 'oneplus_ace_3v'
         # - FEIL: 'oneplus_nord_ce4'
         
-    uses: ./.github/workflows/Call_Build.yml
+    uses: ./.github/workflows/Call_Build_SukiSU.yml
     secrets: inherit
     with:
       CPU: ${{ inputs.CPU }}

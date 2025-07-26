@@ -42,7 +42,7 @@ jobs:
         include:
         - FEIL: 'oneplus_10_pro'
         
-    uses: ./.github/workflows/Call_Build.yml
+    uses: ./.github/workflows/Call_Build_SukiSU.yml
     secrets: inherit
     with:
       CPU: ${{ inputs.CPU }}
