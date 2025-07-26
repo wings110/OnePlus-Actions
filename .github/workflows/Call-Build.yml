@@ -464,7 +464,7 @@ jobs:
         with:
           path: bot
 
-     - name: "📤 Upload to telegram | 上传至Telegram群组"
+      - name: "📤 Upload to telegram | 上传至Telegram群组"
         run: |
           if [ ! -z "${{ secrets.BOT_TOKEN }}" ]; then
             echo "📤 正在上传到Telegram..."
