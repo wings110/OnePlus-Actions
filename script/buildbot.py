@@ -18,6 +18,7 @@ KSU_VAR = os.environ.get("KSU_VAR")
 
 MSG_TEMPLATE = """
 **New Build Published!**
+#oki
 #{device}
 ```Kernel Info
 kernelver: {kernelversion}

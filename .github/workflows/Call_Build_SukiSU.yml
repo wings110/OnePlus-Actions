@@ -379,7 +379,7 @@ jobs:
           image_path=$(find "./kernel_workspace/kernel_platform/common/out/" -name "Image" | head -n 1)
           if [ -n "$image_path" ]; then
             dir1=$(dirname "$image_path")/
-            echo "✅ 使用 make 编译的统一路径，成功找到 Image 文件 ✅"
+            echo "✅成功找到 Image 文件"
           fi
           if [ -n "$image_path" ] && [ -f "$image_path" ]; then
             echo "Image file finally located at: $image_path"
