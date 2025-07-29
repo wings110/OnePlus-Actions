@@ -15,22 +15,22 @@ on:
         required: false
         default: '20'
       delete_failed:
-        description: '删除失败的运行记录？'
+        description: '是否删除失败的运行记录'
         required: false
         type: boolean
         default: true
       delete_success:
-        description: '删除成功的运行记录？'
+        description: '是否删除成功的运行记录'
         required: false
         type: boolean
         default: false
       delete_cancelled:
-        description: '删除已取消的运行记录？'
+        description: '是否删除已取消的运行记录'
         required: false
         type: boolean
         default: true
       reverse_order:
-        description: '从旧到新开始清理？'
+        description: '是否从旧到新开始清理'
         required: false
         type: boolean
         default: true
@@ -72,7 +72,6 @@ jobs:
             echo "未找到工作流 \"$WORKFLOW_NAME\"，退出。"
             exit 1
           fi
-
 
           echo "开始分页获取所有运行记录..."
           PER_PAGE=100
