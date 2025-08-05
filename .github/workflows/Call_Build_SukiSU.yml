@@ -47,6 +47,7 @@ jobs:
     steps:
       # ====================== 系统初始化阶段 ======================
       - name: "🚀 Maximize Build Space | 最大化构建空间"
+        if: ${{ github.event.inputs.KERNEL_VERSION != '6.1' }}
         uses: easimon/maximize-build-space@master
         with:
           root-reserve-mb: 8192
