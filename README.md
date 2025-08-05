@@ -11,7 +11,7 @@
 ## 设备支持
 
 > [!TIP]
-> **一加6/6系列用户**请移步至：[专用仓库](https://github.com/Xiaomichael/oneplus13_a5p_sukisu)
+> **一加6/6系列用户**请移步至：[专用仓库](https://github.com/Xiaomichael/oneplus_6.6_devices)
 
 ## 使用指南
 
