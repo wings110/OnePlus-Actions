@@ -157,7 +157,7 @@ jobs:
           echo "🔄 同步代码库(使用$(nproc --all)线程)..."
           repo sync -c -j$(nproc --all) --no-tags --no-clone-bundle --force-sync
 
-          echo "Kernel version:"-${{ github.event.inputs.ANDROID_VERSION }}-oki-xiaoxiaow"
+          echo "Kernel version:-${{ github.event.inputs.ANDROID_VERSION }}-oki-xiaoxiaow"
           rm kernel_platform/common/android/abi_gki_protected_exports_* || echo "No protected exports!"
           rm kernel_platform/msm-kernel/android/abi_gki_protected_exports_* || echo "No protected exports!"
           sed -i 's/ -dirty//g' kernel_platform/common/scripts/setlocalversion
