@@ -414,11 +414,11 @@ jobs:
         id: set_name
         run: |
           if [ "${{ github.event.inputs.lz4kd }}" = "On" ]; then
-            echo "ARTIFACT_NAME=AnyKernel3_SukiSU_Ultra_lz4kd_${{ env.KSUVER }}_${{ github.event.inputs.FEIL }}" >> $GITHUB_OUTPUT
+            echo "ARTIFACT_NAME=${{ github.event.inputs.FEIL }}_SukiSU_Ultra_lz4kd_${{ env.KSUVER }}" >> $GITHUB_OUTPUT
           elif [ "${{ github.event.inputs.KERNEL_VERSION }}" = "6.1" ]; then
-            echo "ARTIFACT_NAME=AnyKernel3_SukiSU_Ultra_lz4_zstd_${{ env.KSUVER }}_${{ github.event.inputs.FEIL }}" >> $GITHUB_OUTPUT
+            echo "ARTIFACT_NAME=${{ github.event.inputs.FEIL }}_SukiSU_Ultra_lz4_zstd_${{ env.KSUVER }}" >> $GITHUB_OUTPUT
           else
-            echo "ARTIFACT_NAME=AnyKernel3_SukiSU_Ultra_${{ env.KSUVER }}_${{ github.event.inputs.FEIL }}" >> $GITHUB_OUTPUT
+            echo "ARTIFACT_NAME=${{ github.event.inputs.FEIL }}_SukiSU_Ultra_${{ env.KSUVER }}" >> $GITHUB_OUTPUT
           fi
 
       - name: "📤 Upload AnyKernel3 | 上传 AnyKernel3"
