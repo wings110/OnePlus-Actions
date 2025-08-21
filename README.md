@@ -34,6 +34,7 @@
 ### 如何查看处理器代号
 
 ![处理器代号查看方法](https://github.com/user-attachments/assets/fc217103-24ef-45fa-a7e1-f13cfd64f771)
+在对应分支下面有写，如果出现的是`using make build`就不用管
 
 ## 开关建议
 
