@@ -25,7 +25,7 @@ jobs:
     secrets: inherit
     with:
       CPU: "mt6989"
-      CPUD: "mt6989"
+      CPUD: "none"
       ANDROID_VERSION: "android14"
       KERNEL_VERSION: "6.1"
       KPM: "Off"
