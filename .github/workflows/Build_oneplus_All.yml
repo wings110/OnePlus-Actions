@@ -44,7 +44,7 @@ jobs:
       KPM: "Off"
       lz4kd: "On"
       bbr: "Off"
-      proxy: "On"
+      proxy: "Off"
       
   sm8475:
     uses: ./.github/workflows/kernel-sm8475.yml
@@ -57,7 +57,7 @@ jobs:
       KPM: "Off"
       lz4kd: "On"
       bbr: "Off"
-      proxy: "On"
+      proxy: "Off"
       
   # sm8450:
     # uses: ./.github/workflows/kernel-sm8450.yml
@@ -70,7 +70,7 @@ jobs:
       # KPM: "Off"
       # lz4kd: "On"
       # bbr: "Off"
-      # proxy: "On"
+      # proxy: "Off"
 
   # sm7675:
     # uses: ./.github/workflows/kernel-sm7675.yml
