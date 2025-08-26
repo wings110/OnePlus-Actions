@@ -6,7 +6,7 @@
 
 ## OnePlus Kernel 开源地址
 
-[![GitHub Repository](https://img.shields.io/badge/GitHub-Repository-blue)](https://github.com/Xiaomichael/kernel_manifest)
+[![OnePlus Repository](https://img.shields.io/badge/OnePlus-Repository-red)](https://github.com/Xiaomichael/kernel_manifest)
 
 ## 设备支持
 
