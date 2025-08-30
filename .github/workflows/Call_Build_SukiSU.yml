@@ -209,7 +209,7 @@ jobs:
           cd kernel_platform
           echo "📝 复制补丁文件..."
           cp ../susfs4ksu/kernel_patches/50_add_susfs_in_gki-${{ github.event.inputs.ANDROID_VERSION }}-${{ github.event.inputs.KERNEL_VERSION }}.patch ./common/
-          cp ../kernel_patches/next/syscall_hooks.patch ./common/
+          cp ../kernel_patches/next/scope_min_manual_hooks_v1.4.patch ./common/
           cp ../susfs4ksu/kernel_patches/fs/* ./common/fs/
           cp ../susfs4ksu/kernel_patches/include/linux/* ./common/include/linux/
           
@@ -232,7 +232,7 @@ jobs:
           patch -p1 < 50_add_susfs_in_gki-${{ github.event.inputs.ANDROID_VERSION }}-${{ github.event.inputs.KERNEL_VERSION }}.patch || true
           cp ../../kernel_patches/69_hide_stuff.patch ./
           patch -p1 -F 3 < 69_hide_stuff.patch
-          patch -p1 -F 3 < syscall_hooks.patch
+          patch -p1 -F 3 < scope_min_manual_hooks_v1.4.patch
           
           if [ "${{ github.event.inputs.lz4kd }}" = "Off" ] && [ "${{ github.event.inputs.KERNEL_VERSION }}" = "6.1" ]; then
             echo "📦 应用lz4+zstd补丁..."
@@ -253,11 +253,15 @@ jobs:
       - name: "⚙️ Configure Kernel Options | 配置内核选项"
         run: |
           echo "⚙️ 正在配置内核编译选项..."
+          
           cd kernel_workspace/kernel_platform
+          
           # Add KSU configuration settings
           echo "📦 启用 Manual Hook..."
           echo "CONFIG_KSU=y" >> ./common/arch/arm64/configs/gki_defconfig
+          
           if [ "${{ github.event.inputs.KPM }}" == "On" ]; then
+            echo "📦 启用 KPM..."
             echo "CONFIG_KPM=y" >> ./common/arch/arm64/configs/gki_defconfig
           fi
           
@@ -428,13 +432,13 @@ jobs:
           path: ./AnyKernel3/*
          
       - name: "📝 Find zram.ko & crypto_zstdn.ko | 查找 zram.ko & crypto_zstdn.ko"
-        if: ${{ github.event.inputs.lz4kd == 'On' }}
+        # if: ${{ github.event.inputs.lz4kd == 'On' }}
         run: |
           find -name zram.ko
           find -name crypto_zstdn.ko
           
       - name: "📤 Upload zram.ko | 上传 zram.ko"
-        if: ${{ github.event.inputs.lz4kd == 'On' }}
+        # if: ${{ github.event.inputs.lz4kd == 'On' }}
         uses: actions/upload-artifact@v4
         with:
           name: zram.ko
