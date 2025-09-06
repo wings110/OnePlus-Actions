@@ -196,6 +196,8 @@ jobs:
           fi
           
           ./sukisu_setup.bin
+          rm -rf ./sukisu_setup.bin
+          
           echo "✅ SukiSU Ultra配置完成"
           
       - name: "🔧 Set up SUSFS | 配置 SUSFS"
@@ -354,7 +356,7 @@ jobs:
         run: |
           echo "🏗️ 开始内核编译..."
           if [ "${{ github.event.inputs.KERNEL_VERSION }}" == "6.1" ]; then
-            export KBUILD_BUILD_TIMESTAMP="Mon Jul 7 01:51:02 UTC 2025"
+            export KBUILD_BUILD_TIMESTAMP="Wed Aug  6 13:29:27 UTC 2025"
             export KBUILD_BUILD_VERSION=1
             export PATH="$GITHUB_WORKSPACE/kernel_workspace/kernel_platform/prebuilts/clang/host/linux-x86/clang-r487747c/bin:$PATH"
             export PATH="/usr/lib/ccache:$PATH"
