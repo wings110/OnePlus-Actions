@@ -15,5 +15,4 @@
 
 ## 使用指南
 这是一键编译所有内核版本的分支，不建议日常使用，在Actions里面找到他直接运行即可
-<img width="393" height="417" alt="image" src="https://github.com/user-attachments/assets/654376b8-6862-4fc0-bfb1-96699b083b93" />
-
+<img width="397" height="60" alt="image" src="https://github.com/user-attachments/assets/aa23728f-f69c-41be-9dc4-0c05694ed36f" />
