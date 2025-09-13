@@ -14,35 +14,6 @@
 > **一加6/6系列用户**请移步至：[专用仓库](https://github.com/Xiaomichael/oneplus_6.6_devices)
 
 ## 使用指南
+这是一键编译所有内核版本的分支，不建议日常使用，在Actions里面找到他直接运行即可
+<img width="393" height="417" alt="image" src="https://github.com/user-attachments/assets/654376b8-6862-4fc0-bfb1-96699b083b93" />
 
-### 配置文件说明
-
-以**一加12**为例：
-- 无后缀：Android 15
-- `_u` 后缀：Android 14
-- `_t` 后缀：Android 13
-
-![配置文件示例](https://github.com/user-attachments/assets/88f6940b-4b2c-462f-b8fa-3d9dd2f2faec)
-
-### 分支选择
-
-1. 点击 `Branches` 切换处理器分支
-2. 选择适合您设备的配置
-
-![分支选择示例](https://github.com/user-attachments/assets/58f31536-b88e-4613-9865-3e0574868928)
-
-### 如何查看处理器代号
-
-![处理器代号查看方法](https://github.com/user-attachments/assets/fc217103-24ef-45fa-a7e1-f13cfd64f771)
-在对应分支下面有写，如果出现的是`using make build`就不用管
-
-## 开关建议
-
-- **kpm**：建议禁用以减少电量消耗
-- **lz4kd**：
-  - 6.1系列内核：建议关闭以获得更好的 `lz4 + zstd`
-  - 其他内核版本：建议保持开启
-
-## 运行时配置示例
-
-![{BF5F0169-D752-481A-BA95-FCDD8483A359}](https://github.com/user-attachments/assets/8f875661-3955-46c4-b65c-06f40afbc122)
