@@ -1,4 +1,4 @@
-name: Build Oneplus All
+name: Build OnePlus All
 permissions:
   contents: write
   actions: write
