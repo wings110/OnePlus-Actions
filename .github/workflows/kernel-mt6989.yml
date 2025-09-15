@@ -1,4 +1,4 @@
-name: build-mt6989
+name: Build-mt6989
 permissions:
   contents: write
   actions: write

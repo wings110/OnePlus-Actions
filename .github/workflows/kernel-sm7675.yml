@@ -1,4 +1,4 @@
-name: build-sm7675
+name: Build-sm7675
 permissions:
   contents: write
   actions: write

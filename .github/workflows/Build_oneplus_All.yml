@@ -31,7 +31,7 @@ jobs:
       KPM: "Off"
       lz4kd: "Off"
       bbr: "Off"
-      proxy: "Off" #一加ace5竞速版跑的时候需关闭否则出现恶性bug
+      proxy: "Off" # MTK系列CPU跑的时候需关闭否则出现恶性Bug
 
   sm8550:
     uses: ./.github/workflows/kernel-sm8550.yml

@@ -1,4 +1,4 @@
-name: build-sm8650
+name: Build-sm8650
 permissions:
   contents: write
   actions: write
