@@ -6,7 +6,6 @@ from telethon import TelegramClient
 API_ID = 611335
 API_HASH = "d524b414d21f4d37f08684c1df41ac9c"
 
-
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 CHAT_ID = os.environ.get("CHATID")
 MESSAGE_THREAD_ID = os.environ.get("MESSAGE_THREAD_ID")
