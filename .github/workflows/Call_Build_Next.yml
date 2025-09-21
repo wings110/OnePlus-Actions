@@ -22,17 +22,20 @@ on:
         required: true
         type: string
       KPM:
-       required: true
-       type: string
+        required: true
+        type: string
       lz4kd:
-       required: true
-       type: string
+        required: true
+        type: string
       bbr:
-       required: true
-       type: string
+        required: true
+        type: string
+      bbg:
+        required: true
+        type: string
       proxy:
-       required: true
-       type: string
+        required: true
+        type: string
         
 jobs:
   build:
@@ -172,6 +175,14 @@ jobs:
 
           echo "✅ 内核配置完成"
 
+      - name: "⚡ Setup Baseband-guard | 配置 Baseband-guard"
+        if: ${{ inputs.bbg == 'On' }}
+        run: |
+          set -e
+          cd kernel_workspace/kernel_platform/common
+          curl -sSL https://github.com/vc-teahouse/Baseband-guard/raw/main/setup.sh -o setup.sh
+          bash setup.sh
+          
       # ====================== 内核定制阶段 ======================
       - name: "⚡ Setup KernelSU Next | 配置 KernelSU Next"
         run: |
@@ -261,7 +272,13 @@ jobs:
           echo "CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG=y" >> ./common/arch/arm64/configs/gki_defconfig
           echo "CONFIG_KSU_SUSFS_OPEN_REDIRECT=y" >> ./common/arch/arm64/configs/gki_defconfig
           echo "CONFIG_KSU_SUSFS_SUS_SU=n" >> ./common/arch/arm64/configs/gki_defconfig
-            
+
+          if [ "${{ inputs.bbg }}" == "On" ]; then
+            echo "⚡ 启用BBG防格机..."
+            echo 'CONFIG_BBG=y' >> ./common/arch/arm64/configs/gki_defconfig
+            echo 'CONFIG_LSM="landlock,lockdown,yama,loadpin,safesetid,selinux,smack,tomoyo,apparmor,bpf,baseband_guard"' >> ./common/arch/arm64/configs/gki_defconfig
+          fi
+          
           if [ "${{ inputs.bbr }}" == "On" ]; then
             echo "🌐 启用BBR网络算法..."
             echo "CONFIG_TCP_CONG_ADVANCED=y" >> ./common/arch/arm64/configs/gki_defconfig

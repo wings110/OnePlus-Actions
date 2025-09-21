@@ -22,20 +22,20 @@ on:
         required: true
         type: string
       KPM:
-       required: true
-       type: string
+        required: true
+        type: string
       lz4kd:
-       required: true
-       type: string
+        required: true
+        type: string
       bbr:
        required: true
-       type: string
+        type: string
       bbg:
-       required: true
-       type: string
+        required: true
+        type: string
       proxy:
-       required: true
-       type: string
+        required: true
+        type: string
          
 jobs:
   build:

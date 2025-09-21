@@ -22,17 +22,20 @@ on:
         required: true
         type: string
       KPM:
-       required: true
-       type: string
+        required: true
+        type: string
       lz4kd:
-       required: true
-       type: string
+        required: true
+        type: string
       bbr:
-       required: true
-       type: string
+        required: true
+        type: string
+      bbg:
+        required: true
+        type: string
       proxy:
-       required: true
-       type: string
+        required: true
+        type: string
 
 jobs:
   build-kernel-sm7675:
@@ -54,4 +57,5 @@ jobs:
       KPM: ${{ inputs.KPM }}
       lz4kd: ${{ inputs.lz4kd }}
       bbr: ${{ inputs.bbr }}
+      bbg: ${{ inputs.bbg }}
       proxy: ${{ inputs.proxy }}
