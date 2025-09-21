@@ -30,6 +30,9 @@ on:
       bbr:
        required: true
        type: string
+      bbg:
+       required: true
+       type: string
       proxy:
        required: true
        type: string
@@ -53,4 +56,5 @@ jobs:
       KPM: ${{ inputs.KPM }}
       lz4kd: ${{ inputs.lz4kd }}
       bbr: ${{ inputs.bbr }}
+      bbr: ${{ inputs.bbg }}
       proxy: ${{ inputs.proxy }}
