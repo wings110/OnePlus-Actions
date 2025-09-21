@@ -28,7 +28,7 @@ on:
         required: true
         type: string
       bbr:
-       required: true
+        required: true
         type: string
       bbg:
         required: true
