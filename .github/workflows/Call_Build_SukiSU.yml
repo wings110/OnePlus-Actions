@@ -63,9 +63,9 @@ jobs:
       - name: "⚙️ Setup Cache Env | 设置缓存环境"
         run: |
           echo "🔧 正在设置机型隔离缓存目录..."
-          echo "CCACHE_DIR=$HOME/.ccache_${{ inputs.FEIL }}" >> $GITHUB_ENV
-          mkdir -p "$HOME/.ccache_${{ inputs.FEIL }}"
-          echo "✅ 缓存目录已设置: $HOME/.ccache_${{ inputs.FEIL }}"
+          echo "CCACHE_DIR=$HOME/.ccache_${{ inputs.FEIL }}_SukiSU" >> $GITHUB_ENV
+          mkdir -p "$HOME/.ccache_${{ inputs.FEIL }}_SukiSU"
+          echo "✅ 缓存目录已设置: $HOME/.ccache_${{ inputs.FEIL }}_SukiSU"
 
       - name: "🔐 Configure Git | 配置Git账户"
         run: |
@@ -117,10 +117,10 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ${{ env.CCACHE_DIR }}
-          key: ccache-${{ runner.os }}-${{ github.ref }}-${{ inputs.FEIL }}
+          key: ccache-${{ runner.os }}-${{ github.ref }}-${{ inputs.FEIL }}-SukiSU
           restore-keys: |
-            ccache-${{ runner.os }}-${{ inputs.FEIL }}-
-            ccache-${{ runner.os }}-
+            ccache-${{ runner.os }}-${{ inputs.FEIL }}-SukiSU
+            ccache-${{ runner.os }}-SukiSU
 
       - name: "⚙️ Initialize ccache | 初始化ccache"
         run: |
