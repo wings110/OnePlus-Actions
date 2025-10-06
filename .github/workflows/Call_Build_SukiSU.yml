@@ -109,7 +109,7 @@ jobs:
             python3 git curl ccache libelf-dev \
             build-essential flex bison libssl-dev \
             libncurses-dev liblz4-tool zlib1g-dev \
-            libxml2-utils rsync unzip
+            libxml2-utils rsync unzip gawk
           echo "✅ 所有依赖项已成功安装"
 
       # ====================== 缓存管理阶段 ======================
@@ -176,6 +176,8 @@ jobs:
 
           echo "✅ 内核配置完成"
 
+      # ====================== 内核定制阶段 ======================
+
       - name: "⚡ Setup Baseband-guard | 配置 Baseband-guard"
         if: ${{ inputs.bbg == 'On' }}
         run: |
@@ -184,8 +186,7 @@ jobs:
           curl -sSL https://github.com/vc-teahouse/Baseband-guard/raw/main/setup.sh -o setup.sh
           bash setup.sh     
               
-      # ====================== 内核定制阶段 ======================
-      - name: "⚡ Setup SukiSU Ultra | 配置SukiSU Ultra"
+      - name: "⚡ Setup SukiSU Ultra | 配置 SukiSU Ultra"
         run: |
           echo "🛠️ 正在设置SukiSU Ultra..."
           mkdir -p kernel_workspace/kernel_platform
@@ -211,7 +212,7 @@ jobs:
           
           echo "✅ SukiSU Ultra配置完成"
           
-      - name: "🔧 Set up SUSFS | 配置 SUSFS"
+      - name: "🔧 Setup SUSFS | 配置 SUSFS"
         run: |
           cd kernel_workspace
           echo "⬇️ 下载SUSFS补丁..."
