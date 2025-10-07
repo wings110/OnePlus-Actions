@@ -179,7 +179,7 @@ jobs:
       # ====================== 内核定制阶段 ======================
 
       - name: "⚡ Setup Baseband-guard | 配置 Baseband-guard"
-        if: ${{ inputs.bbg == 'On' }}
+        if: ${{ inputs.bbg == 'On' && inputs.KPM == 'Off' }}
         run: |
           set -e
           cd kernel_workspace/kernel_platform/common
@@ -300,7 +300,7 @@ jobs:
           echo "CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG=y" >> ./common/arch/arm64/configs/gki_defconfig
           echo "CONFIG_KSU_SUSFS_OPEN_REDIRECT=y" >> ./common/arch/arm64/configs/gki_defconfig
 
-          if [ "${{ inputs.bbg }}" == "On" ]; then
+          if [ "${{ inputs.bbg }}" == "On" ] && [ "${{ inputs.KPM }}" == "Off" ]; then
             echo "⚡ 启用BBG防格机..."
             echo 'CONFIG_BBG=y' >> ./common/arch/arm64/configs/gki_defconfig
             echo 'CONFIG_LSM="landlock,lockdown,yama,loadpin,safesetid,selinux,smack,tomoyo,apparmor,bpf,baseband_guard"' >> ./common/arch/arm64/configs/gki_defconfig
