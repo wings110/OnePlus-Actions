@@ -12,9 +12,6 @@ on:
       FEIL:
         required: false
         type: string
-      CPUD:
-        required: true
-        type: string
       ANDROID_VERSION:
         required: true
         type: string
@@ -53,7 +50,6 @@ jobs:
     with:
       CPU: ${{ inputs.CPU }}
       FEIL: ${{ matrix.FEIL }}
-      CPUD: ${{ inputs.CPUD }}
       ANDROID_VERSION: ${{ inputs.ANDROID_VERSION }}
       KERNEL_VERSION: ${{ inputs.KERNEL_VERSION }}
       KPM: ${{ inputs.KPM }}

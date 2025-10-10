@@ -12,9 +12,6 @@ on:
       FEIL:
         required: true
         type: string
-      CPUD:
-        required: true
-        type: string
       ANDROID_VERSION:
         required: true
         type: string
