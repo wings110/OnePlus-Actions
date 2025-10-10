@@ -72,7 +72,7 @@ jobs:
           echo "✅ Git配置完成"
 
       # ====================== 依赖管理阶段 ======================
-      - name: "📦 Cache & Install Dependencies | 缓存&安装构建依赖"
+      - name: "📦 Cache & Install Dependencies | 缓存 & 安装构建依赖"
         uses: awalsh128/cache-apt-pkgs-action@latest 
         with: 
           packages: python3 git curl ccache libelf-dev build-essential flex bison libssl-dev libncurses-dev liblz4-tool zlib1g-dev libxml2-utils rsync unzip gawk
