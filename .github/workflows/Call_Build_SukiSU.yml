@@ -72,42 +72,11 @@ jobs:
           echo "✅ Git配置完成"
 
       # ====================== 依赖管理阶段 ======================
-      - name: "📦 Configure APT Cache | 配置APT缓存"
-        run: |
-          echo "🔧 正在设置APT缓存目录..."
-          APT_CACHE_DIR="$HOME/apt-cache"
-          mkdir -p "$APT_CACHE_DIR"/{archives,lists/partial}
-          # 创建APT配置文件
-          echo "Dir::Cache \"$APT_CACHE_DIR\";" | sudo tee /etc/apt/apt.conf.d/90user-cache
-          echo "Dir::Cache::archives \"$APT_CACHE_DIR/archives\";" | sudo tee -a /etc/apt/apt.conf.d/90user-cache
-          echo "Dir::State::lists \"$APT_CACHE_DIR/lists\";" | sudo tee -a /etc/apt/apt.conf.d/90user-cache
-          echo "Acquire::Check-Valid-Until \"false\";" | sudo tee -a /etc/apt/apt.conf.d/90user-cache
-          echo "Acquire::Languages \"none\";" | sudo tee -a /etc/apt/apt.conf.d/90user-cache
-          sudo chown -R $USER:$USER "$APT_CACHE_DIR"
-          echo "✅ APT缓存配置完成"
-
-      - name: "📦 Restore APT Cache | 恢复APT缓存"
-        uses: actions/cache@v3
-        with:
-          path: ${{ env.HOME }}/apt-cache
-          key: ${{ runner.os }}-apt-${{ hashFiles('.github/workflows/Build SukiSU Ultra.yml') }}
-          restore-keys: |
-            ${{ runner.os }}-apt-
-
-      - name: "📦 Install Dependencies | 安装构建依赖"
-        run: |
-          echo "🔧 正在安装编译依赖项..."
-          sudo rm -f /var/lib/apt/lists/lock /var/lib/dpkg/lock
-          APT_CACHE_DIR="$HOME/apt-cache"
-          mkdir -p "$APT_CACHE_DIR/lists/partial"
-          # 更新包列表并安装必要工具
-          sudo apt -o Dir::Cache="$APT_CACHE_DIR" update -qq
-          sudo DEBIAN_FRONTEND=noninteractive apt -o Dir::Cache="$APT_CACHE_DIR" install -yq --no-install-recommends \
-            python3 git curl ccache libelf-dev \
-            build-essential flex bison libssl-dev \
-            libncurses-dev liblz4-tool zlib1g-dev \
-            libxml2-utils rsync unzip gawk
-          echo "✅ 所有依赖项已成功安装"
+      - name: "📦 Cache & Install Dependencies | 缓存&安装构建依赖"
+        uses: awalsh128/cache-apt-pkgs-action@latest 
+        with: 
+          packages: python3 git curl ccache libelf-dev build-essential flex bison libssl-dev libncurses-dev liblz4-tool zlib1g-dev libxml2-utils rsync unzip gawk
+          execute_install_scripts: true
 
       # ====================== 缓存管理阶段 ======================
       - name: "💾 Restore ccache | 恢复ccache缓存"
