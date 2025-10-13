@@ -242,7 +242,7 @@ jobs:
           if [ "${{ inputs.bbg }}" == "On" ] && [ "${{ inputs.KPM }}" == "Off" ]; then
             echo "⚡ 启用BBG防格机..."
             echo 'CONFIG_BBG=y' >> ./common/arch/arm64/configs/gki_defconfig
-            echo 'CONFIG_LSM="landlock,lockdown,yama,loadpin,safesetid,selinux,smack,tomoyo,apparmor,bpf,baseband_guard"' >> ./common/arch/arm64/configs/gki_defconfig
+            echo 'CONFIG_LSM="landlock,lockdown,yama,loadpin,safesetid,integrity,selinux,smack,tomoyo,apparmor,bpf,baseband_guard"' >> ./common/arch/arm64/configs/gki_defconfig
           fi
           
           if [ "${{ inputs.bbr }}" == "On" ]; then
