@@ -120,22 +120,25 @@ jobs:
 
       - name: "⬇️ Clone Kernel Source | 克隆内核源码"
         run: |
-          echo "🌐 正在初始化内核仓库..."
           mkdir kernel_workspace && cd kernel_workspace
-         
+
+          echo "🌐 正在初始化内核仓库..."
           repo init -u https://github.com/Xiaomichael/kernel_manifest.git -b refs/heads/oneplus/${{ inputs.CPU }} -m ${{ inputs.FEIL }}.xml --depth=1
+
           echo "🔄 同步代码库(使用$(nproc --all)线程)..."
           repo sync -c -j$(nproc --all) --no-tags --no-clone-bundle --force-sync
           
-          echo "Kernel version:-${{ inputs.ANDROID_VERSION }}-oki-xiaoxiaow"
           rm kernel_platform/common/android/abi_gki_protected_exports_* || echo "No protected exports!"
           rm kernel_platform/msm-kernel/android/abi_gki_protected_exports_* || echo "No protected exports!"
+          
+          # Remove -dirty in kernel version
           sed -i 's/ -dirty//g' kernel_platform/common/scripts/setlocalversion
           sed -i 's/ -dirty//g' kernel_platform/msm-kernel/scripts/setlocalversion
           sed -i 's/ -dirty//g' kernel_platform/external/dtc/scripts/setlocalversion
           sed -i '$i res=$(echo "$res" | sed '\''s/-dirty//g'\'')' kernel_platform/common/scripts/setlocalversion
           sed -i '$i res=$(echo "$res" | sed '\''s/-dirty//g'\'')' kernel_platform/msm-kernel/scripts/setlocalversion
           sed -i '$i res=$(echo "$res" | sed '\''s/-dirty//g'\'')' kernel_platform/external/dtc/scripts/setlocalversion
+
           sed -i '$s|echo "\$res"|echo "-${{ inputs.ANDROID_VERSION }}-oki-xiaoxiaow"|' kernel_platform/common/scripts/setlocalversion            
           sed -i '$s|echo "\$res"|echo "-${{ inputs.ANDROID_VERSION }}-oki-xiaoxiaow"|' kernel_platform/msm-kernel/scripts/setlocalversion
           sed -i '$s|echo "\$res"|echo "-${{ inputs.ANDROID_VERSION }}-oki-xiaoxiaow"|' kernel_platform/external/dtc/scripts/setlocalversion
@@ -149,20 +152,20 @@ jobs:
         run: |
           set -e
           cd kernel_workspace/kernel_platform/common
+          echo "🛠️ 正在设置BBG..."
           curl -sSL https://github.com/vc-teahouse/Baseband-guard/raw/main/setup.sh -o setup.sh
           bash setup.sh     
               
       - name: "⚡ Setup SukiSU Ultra | 配置 SukiSU Ultra"
         run: |
-          echo "🛠️ 正在设置SukiSU Ultra..."
-          mkdir -p kernel_workspace/kernel_platform
-          
           cd kernel_workspace/kernel_platform
+
           # 下载并执行设置脚本
+          echo "🛠️ 正在设置SukiSU Ultra..."
           curl -LSs "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU-Ultra/susfs-main/kernel/setup.sh" | bash -s susfs-main
           
           cd KernelSU
-          echo "⬇️ 下载KernelSU设置工具..."
+          echo "⬇️ 下载SukiSU设置工具..."
           curl -L -o sukisu_setup.bin https://github.com/Xiaomichael/OnePlus-Actions/raw/Build/script/sukisu_setup.bin
           chmod +x sukisu_setup.bin
           
@@ -181,6 +184,7 @@ jobs:
       - name: "🔧 Setup SUSFS | 配置 SUSFS"
         run: |
           cd kernel_workspace
+
           echo "⬇️ 下载SUSFS补丁..."
           git clone https://gitlab.com/simonpunk/susfs4ksu.git -b gki-${{ inputs.ANDROID_VERSION }}-${{ inputs.KERNEL_VERSION }}
           git clone https://github.com/Xiaomichael/kernel_patches.git
@@ -209,10 +213,6 @@ jobs:
           
           echo "🔧 应用补丁..."
           cd ./common
-          patch -p1 < 50_add_susfs_in_gki-${{ inputs.ANDROID_VERSION }}-${{ inputs.KERNEL_VERSION }}.patch || true
-          cp ../../kernel_patches/69_hide_stuff.patch ./
-          patch -p1 -F 3 < 69_hide_stuff.patch
-          patch -p1 -F 3 < scope_min_manual_hooks_v1.5.patch
           
           if [ "${{ inputs.lz4kd }}" = "Off" ] && [ "${{ inputs.KERNEL_VERSION }}" = "6.1" ]; then
             echo "📦 应用lz4+zstd补丁..."
@@ -228,13 +228,18 @@ jobs:
             patch -p1 -F 3 < lz4k_oplus.patch || true
           fi
           
+          patch -p1 < 50_add_susfs_in_gki-${{ inputs.ANDROID_VERSION }}-${{ inputs.KERNEL_VERSION }}.patch || true
+          cp ../../kernel_patches/69_hide_stuff.patch ./
+          patch -p1 -F 3 < 69_hide_stuff.patch
+          patch -p1 -F 3 < scope_min_manual_hooks_v1.5.patch
+
           echo "✅ 所有补丁应用完成"
 
       - name: "⚙️ Configure Kernel Options | 配置内核选项"
         run: |
-          echo "⚙️ 正在配置内核编译选项..."
-          
           cd kernel_workspace/kernel_platform
+
+          echo "⚙️ 正在配置内核编译选项..."
           
           # Add KSU configuration settings
           echo "📦 启用 Manual Hook..."
@@ -266,7 +271,7 @@ jobs:
           echo "CONFIG_KSU_SUSFS_OPEN_REDIRECT=y" >> ./common/arch/arm64/configs/gki_defconfig
 
           if [ "${{ inputs.bbg }}" == "On" ] && [ "${{ inputs.KPM }}" == "Off" ]; then
-            echo "⚡ 启用BBG防格机..."
+            echo "⚡ 启用BBG中..."
             echo 'CONFIG_BBG=y' >> ./common/arch/arm64/configs/gki_defconfig
             echo 'CONFIG_LSM="landlock,lockdown,yama,loadpin,safesetid,integrity,selinux,smack,tomoyo,apparmor,bpf,baseband_guard"' >> ./common/arch/arm64/configs/gki_defconfig
           fi          
