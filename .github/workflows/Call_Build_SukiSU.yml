@@ -269,6 +269,11 @@ jobs:
           echo "CONFIG_KSU_SUSFS_HIDE_KSU_SUSFS_SYMBOLS=y" >> ./common/arch/arm64/configs/gki_defconfig
           echo "CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG=y" >> ./common/arch/arm64/configs/gki_defconfig
           echo "CONFIG_KSU_SUSFS_OPEN_REDIRECT=y" >> ./common/arch/arm64/configs/gki_defconfig
+          echo "CONFIG_KSU_SUSFS_SUS_MAP=y" >> ./common/arch/arm64/configs/gki_defconfig
+
+          #添加对 Mountify (backslashxx/mountify) 模块的支持
+          echo "CONFIG_TMPFS_XATTR=y" >> ./common/arch/arm64/configs/gki_defconfig
+          echo "CONFIG_TMPFS_POSIX_ACL=y" >> ./common/arch/arm64/configs/gki_defconfig
 
           if [ "${{ inputs.bbg }}" == "On" ] && [ "${{ inputs.KPM }}" == "Off" ]; then
             echo "⚡ 启用BBG中..."
@@ -335,7 +340,10 @@ jobs:
             sed -i 's/^CONFIG_LTO_CLANG_NONE=y/CONFIG_LTO_CLANG_THIN=y/' "$DEFCONFIG"
             grep -q '^CONFIG_LTO_CLANG_THIN=y' "$DEFCONFIG" || echo 'CONFIG_LTO_CLANG_THIN=y' >> "$DEFCONFIG"
           fi
-          
+
+          #跳过将uapi标准头安装到 usr/include 目录的不必要操作，节省编译时间
+          echo "CONFIG_HEADERS_INSTALL=n" >> ./common/arch/arm64/configs/gki_defconfig
+
           # Remove check_defconfig
           sed -i 's/check_defconfig//' ./common/build.config.gki
           echo "✅ 内核配置更新完成"
@@ -344,7 +352,7 @@ jobs:
         run: |
           echo "🏗️ 开始内核编译..."
           if [ "${{ inputs.KERNEL_VERSION }}" == "6.1" ]; then
-            export KBUILD_BUILD_TIMESTAMP="Wed Aug  6 13:29:27 UTC 2025"
+            export KBUILD_BUILD_TIMESTAMP="Fri Aug 29 08:51:19 UTC 2025"
             export KBUILD_BUILD_VERSION=1
             export PATH="$GITHUB_WORKSPACE/kernel_workspace/kernel_platform/prebuilts/clang/host/linux-x86/clang-r487747c/bin:$PATH"
             export PATH="/usr/lib/ccache:$PATH"
@@ -420,32 +428,12 @@ jobs:
         with:
           name: ${{ steps.set_name.outputs.ARTIFACT_NAME }}
           path: ./AnyKernel3/*
-
-      # - name: "📦 Package files | 打包文件"
-        # run: |
-            # echo "📦📤 正在打包文件..."
-            # cd AnyKernel3
-            # zip -q -r "../${{ steps.set_name.outputs.ARTIFACT_NAME }}.zip" ./*
-            # cd ..
-            # cat > release.txt << 'EOF'
-            # \# ${{ inputs.FEIL }}
-            # ```
-            # 构建时间：$(TZ=Asia/Shanghai date)
-            # 内核版本：${{ inputs.ANDROID_VERSION}}-${{ inputs.KERNEL_VERSION }}
-            # KSU 版本：${{env.KSUVER_STR}}(${{env.KSUVER}})
-            # KPM 状态：${{ inputs.KPM }}
-            # LZ4KD 状态: ${{ inputs.lz4kd }}
-            # ```
-            # EOF
-
-      # - name: "📤 Upload to telegram | 上传至Telegram群组"
-        # uses: puernya/tg-bot-upload@v1
-        # with:
-          # bot-id: ${{ secrets.BOT_TOKEN }}
-          # chat-id: ${{ secrets.CHATID }}
-          # topic-id: ${{ secrets.MESSAGE_THREAD_ID }} 
-          # file-path: "${{ steps.set_name.outputs.ARTIFACT_NAME }}.zip"
-          # caption-path: release.txt
+         
+      - name: "📝 Find zram.ko & crypto_zstdn.ko | 查找 zram.ko & crypto_zstdn.ko"
+        # if: ${{ inputs.lz4kd == 'On' }}
+        run: |
+          find -name zram.ko
+          find -name crypto_zstdn.ko
 
       - name: "🤖 Get bot script | 获取 bot 脚本"
         uses: actions/checkout@v4
@@ -473,6 +461,3 @@ jobs:
           LZ4KD: ${{ inputs.lz4kd }}
           BBR: ${{ inputs.bbr }}
           KSU_VAR: "SukiSU"
-          
-      - name: 📊 Post-build disk check (构建后空间检查)
-        run: df -h
