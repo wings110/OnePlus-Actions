@@ -193,7 +193,6 @@ jobs:
           cd kernel_platform
           echo "📝 复制补丁文件..."
           cp ../susfs4ksu/kernel_patches/50_add_susfs_in_gki-${{ inputs.ANDROID_VERSION }}-${{ inputs.KERNEL_VERSION }}.patch ./common/
-          cp ../kernel_patches/sukisu/scope_min_manual_hooks_v1.6.patch ./common/
           cp ../susfs4ksu/kernel_patches/fs/* ./common/fs/
           cp ../susfs4ksu/kernel_patches/include/linux/* ./common/include/linux/
           
@@ -231,7 +230,6 @@ jobs:
           patch -p1 < 50_add_susfs_in_gki-${{ inputs.ANDROID_VERSION }}-${{ inputs.KERNEL_VERSION }}.patch || true
           cp ../../kernel_patches/69_hide_stuff.patch ./
           patch -p1 -F 3 < 69_hide_stuff.patch
-          patch -p1 -F 3 < scope_min_manual_hooks_v1.6.patch
 
           echo "✅ 所有补丁应用完成"
 
@@ -250,9 +248,8 @@ jobs:
             echo "CONFIG_KPM=y" >> ./common/arch/arm64/configs/gki_defconfig
           fi
           
-          # Add VFS configuration settings
-          echo "CONFIG_KSU_SUSFS_SUS_SU=n" >> ./common/arch/arm64/configs/gki_defconfig
-          echo "CONFIG_KSU_MANUAL_HOOK=y" >> ./common/arch/arm64/configs/gki_defconfig    
+          # Add inline configuration settings
+          echo "CONFIG_KSU_SUSFS_SUS_SU=n" >> ./common/arch/arm64/configs/gki_defconfig  
           
           # Add SUSFS configuration settings
           echo "CONFIG_KSU_SUSFS=y" >> ./common/arch/arm64/configs/gki_defconfig
@@ -428,3 +425,43 @@ jobs:
         with:
           name: ${{ steps.set_name.outputs.ARTIFACT_NAME }}
           path: ./AnyKernel3/*
+         
+      - name: "📝 Find zram.ko & crypto_zstdn.ko | 查找 zram.ko & crypto_zstdn.ko"
+        # if: ${{ inputs.lz4kd == 'On' }}
+        run: |
+          find -name zram.ko
+          find -name crypto_zstdn.ko
+          
+      - name: "📤 Upload zram.ko | 上传 zram.ko"
+        # if: ${{ inputs.lz4kd == 'On' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.FEIL }}_zram.ko
+          path: ./kernel_workspace/kernel_platform/common/out/drivers/block/zram/zram.ko
+
+      - name: "🤖 Get bot script | 获取 bot 脚本"
+        uses: actions/checkout@v4
+        with:
+          path: bot
+
+      - name: "📤 Upload to telegram | 上传至Telegram群组"
+        run: |
+          if [ ! -z "${{ secrets.BOT_TOKEN }}" ]; then
+            echo "📤 正在上传到Telegram..."
+            cd AnyKernel3
+            zip -q -r "../${{ steps.set_name.outputs.ARTIFACT_NAME }}.zip" ./*
+            cd ..
+            pip3 install telethon
+            python3 ./bot/script/buildbot.py "./${{ steps.set_name.outputs.ARTIFACT_NAME }}.zip"
+            echo "✅ 文件已上传到Telegram"
+          fi
+        env:
+          CHATID: ${{secrets.CHATID}}
+          BOT_TOKEN: ${{secrets.BOT_TOKEN}}
+          MESSAGE_THREAD_ID: ${{secrets.MESSAGE_THREAD_ID}}
+          KernelVer: ${{ inputs.ANDROID_VERSION}}-${{ inputs.KERNEL_VERSION }}
+          DEVICE: ${{ inputs.FEIL }}
+          KPM: ${{ inputs.KPM }}
+          LZ4KD: ${{ inputs.lz4kd }}
+          BBR: ${{ inputs.bbr }}
+          KSU_VAR: "SukiSU"
