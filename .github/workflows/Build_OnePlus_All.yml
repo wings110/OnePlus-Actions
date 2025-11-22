@@ -7,6 +7,19 @@ on:
   workflow_dispatch:
   
 jobs:
+  sm8750:
+    uses: ./.github/workflows/kernel-sm8750.yml
+    secrets: inherit
+    with:
+      CPU: "sm8750"
+      ANDROID_VERSION: "android15"
+      KERNEL_VERSION: "6.6"
+      KPM: "Off"
+      lz4kd: "Off"
+      bbr: "Off"
+      bbg: "On"
+      proxy: "On"
+
   sm8650:
     uses: ./.github/workflows/kernel-sm8650.yml
     secrets: inherit
