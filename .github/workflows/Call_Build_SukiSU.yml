@@ -47,7 +47,7 @@ jobs:
     steps:
       # ====================== 系统初始化阶段 ======================
       - name: "🚀 Maximize Build Space | 最大化构建空间"
-        if: ${{ inputs.KERNEL_VERSION != '6.1' }}
+        if: ${{ inputs.KERNEL_VERSION == '5.10' || inputs.KERNEL_VERSION == '5.15' }}
         uses: easimon/maximize-build-space@master
         with:
           root-reserve-mb: 8192
@@ -138,10 +138,17 @@ jobs:
           sed -i '$i res=$(echo "$res" | sed '\''s/-dirty//g'\'')' kernel_platform/common/scripts/setlocalversion
           sed -i '$i res=$(echo "$res" | sed '\''s/-dirty//g'\'')' kernel_platform/msm-kernel/scripts/setlocalversion
           sed -i '$i res=$(echo "$res" | sed '\''s/-dirty//g'\'')' kernel_platform/external/dtc/scripts/setlocalversion
-
-          sed -i '$s|echo "\$res"|echo "-${{ inputs.ANDROID_VERSION }}-oki-xiaoxiaow"|' kernel_platform/common/scripts/setlocalversion            
-          sed -i '$s|echo "\$res"|echo "-${{ inputs.ANDROID_VERSION }}-oki-xiaoxiaow"|' kernel_platform/msm-kernel/scripts/setlocalversion
-          sed -i '$s|echo "\$res"|echo "-${{ inputs.ANDROID_VERSION }}-oki-xiaoxiaow"|' kernel_platform/external/dtc/scripts/setlocalversion
+          
+          if [ "${{ inputs.KERNEL_VERSION }}" != "6.6" ]; then
+            sed -i '$s|echo "\$res"|echo "-${{ inputs.ANDROID_VERSION }}-oki-xiaoxiaow"|' kernel_platform/common/scripts/setlocalversion            
+            sed -i '$s|echo "\$res"|echo "-${{ inputs.ANDROID_VERSION }}-oki-xiaoxiaow"|' kernel_platform/msm-kernel/scripts/setlocalversion
+            sed -i '$s|echo "\$res"|echo "-${{ inputs.ANDROID_VERSION }}-oki-xiaoxiaow"|' kernel_platform/external/dtc/scripts/setlocalversion
+          else
+            ESCAPED_SUFFIX=$(printf '%s\n' "-${{ inputs.ANDROID_VERSION }}-oki-xiaoxiaow" | sed 's:[\/&]:\\&:g')
+            sudo sed -i "s/-4k/$ESCAPED_SUFFIX/g" kernel_platform/common/arch/arm64/configs/gki_defconfig
+            sed -i 's/${scm_version}//' kernel_platform/common/scripts/setlocalversion
+            sed -i 's/${scm_version}//' kernel_platform/msm-kernel/scripts/setlocalversion
+          fi
 
           echo "✅ 内核配置完成"
 
@@ -195,12 +202,9 @@ jobs:
           cp ../susfs4ksu/kernel_patches/50_add_susfs_in_gki-${{ inputs.ANDROID_VERSION }}-${{ inputs.KERNEL_VERSION }}.patch ./common/
           cp ../susfs4ksu/kernel_patches/fs/* ./common/fs/
           cp ../susfs4ksu/kernel_patches/include/linux/* ./common/include/linux/
-          
-          if [ "${{ inputs.lz4kd }}" = "Off" ] && [ "${{ inputs.KERNEL_VERSION }}" = "6.1" ]; then
-            cp ../kernel_patches/zram/001-lz4.patch ./common/
-            cp ../kernel_patches/zram/lz4armv8.S ./common/lib
-            cp ../kernel_patches/zram/002-zstd.patch ./common/
-          fi
+          cp ../kernel_patches/zram/001-lz4.patch ./common/
+          cp ../kernel_patches/zram/lz4armv8.S ./common/lib
+          cp ../kernel_patches/zram/002-zstd.patch ./common/
           
           if [ "${{ inputs.lz4kd }}" == "On" ]; then
             # Copy lz4k from ShirkNeko
@@ -218,6 +222,11 @@ jobs:
             git apply -p1 < 001-lz4.patch || true
             patch -p1 < 002-zstd.patch || true
           fi
+
+          if [ "${{ inputs.lz4kd }}" = "Off" ] && [ "${{ inputs.KERNEL_VERSION }}" = "6.6" ]; then
+            echo "📦 应用lz4补丁..."
+            git apply -p1 < 001-lz4.patch || true
+          fi
           
           if [ "${{ inputs.lz4kd }}" == "On" ]; then
             echo "🚀 应用lz4kd补丁..."
@@ -233,6 +242,16 @@ jobs:
 
           echo "✅ 所有补丁应用完成"
 
+      - name: "⚙️ Apply HMBIRD_OGKI to HMBIRD_GKI | OGKI转换GKI"
+        if: ${{ inputs.KERNEL_VERSION == '6.6'}}
+        run: |
+          cd kernel_workspace/kernel_platform/common
+          sed -i '1iobj-y += hmbird_patch.o' drivers/Makefile
+          wget https://github.com/Numbersf/Action-Build/raw/SukiSU-Ultra/patches/hmbird_patch.patch
+          echo "⚙️ 正在打OGKI转换GKI补丁"
+          patch -p1 -F 3 < hmbird_patch.patch
+          echo "✅ OGKI转换GKI_patch完成"
+
       - name: "⚙️ Configure Kernel Options | 配置内核选项"
         run: |
           cd kernel_workspace/kernel_platform
@@ -247,9 +266,6 @@ jobs:
             echo "📦 启用 KPM..."
             echo "CONFIG_KPM=y" >> ./common/arch/arm64/configs/gki_defconfig
           fi
-          
-          # Add inline configuration settings
-          echo "CONFIG_KSU_SUSFS_SUS_SU=n" >> ./common/arch/arm64/configs/gki_defconfig  
           
           # Add SUSFS configuration settings
           echo "CONFIG_KSU_SUSFS=y" >> ./common/arch/arm64/configs/gki_defconfig
@@ -295,9 +311,9 @@ jobs:
             echo "CONFIG_ZRAM_WRITEBACK=y" >> ./common/arch/arm64/configs/gki_defconfig
           fi
           
-          if [ "${{ inputs.KERNEL_VERSION }}" == "6.1" ]; then
+          if [ "${{ inputs.KERNEL_VERSION }}" == "6.1" || [ "${{ inputs.KERNEL_VERSION }}" == "6.6" ]]; then
             # Add O2 config
-            echo "📦 为6.1加入O2优化..."
+            echo "📦 为6.1&6.6加入O2优化..."
             echo "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=y" >> ./common/arch/arm64/configs/gki_defconfig
           fi
 
@@ -356,6 +372,13 @@ jobs:
             sudo apt install libelf-dev
             cd kernel_workspace/kernel_platform/common
             make -j$(nproc --all) LLVM=1 ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CC="ccache clang" RUSTC=../../prebuilts/rust/linux-x86/1.73.0b/bin/rustc PAHOLE=../../prebuilts/kernel-build-tools/linux-x86/bin/pahole LD=ld.lld HOSTLD=ld.lld O=out KCFLAGS+=-O2 gki_defconfig all
+                      
+          elif [ "${{ inputs.KERNEL_VERSION }}" == "6.6" ]; then
+            export PATH="/usr/lib/ccache:$GITHUB_WORKSPACE/kernel_workspace/kernel_platform/prebuilts/clang/host/linux-x86/clang-r510928/bin:$PATH" 
+            export PATH="/usr/lib/ccache:$PATH"
+            sudo apt install libelf-dev
+            cd kernel_workspace/kernel_platform/common
+            make -j$(nproc --all) LLVM=1 ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CC="ccache clang" RUSTC=../../prebuilts/rust/linux-x86/1.73.0b/bin/rustc PAHOLE=../../prebuilts/kernel-build-tools/linux-x86/bin/pahole LD=ld.lld HOSTLD=ld.lld O=out KCFLAGS+=-O2  gki_defconfig all
             
           elif [ "${{ inputs.KERNEL_VERSION }}" == "5.15" ]; then
             export PATH="$GITHUB_WORKSPACE/kernel_workspace/kernel_platform/prebuilts/clang/host/linux-x86/clang-r450784e/bin:$PATH"
@@ -416,6 +439,8 @@ jobs:
             echo "ARTIFACT_NAME=${{ inputs.FEIL }}_SukiSU_Ultra_lz4kd_${{ env.KSUVER }}" >> $GITHUB_OUTPUT
           elif [ "${{ inputs.KERNEL_VERSION }}" = "6.1" ]; then
             echo "ARTIFACT_NAME=${{ inputs.FEIL }}_SukiSU_Ultra_lz4_zstd_${{ env.KSUVER }}" >> $GITHUB_OUTPUT
+          elif [ "${{ inputs.KERNEL_VERSION }}" = "6.6" ]; then
+            echo "ARTIFACT_NAME=${{ inputs.FEIL }}_SukiSU_Ultra_lz4_${{ env.KSUVER }}" >> $GITHUB_OUTPUT
           else
             echo "ARTIFACT_NAME=${{ inputs.FEIL }}_SukiSU_Ultra_${{ env.KSUVER }}" >> $GITHUB_OUTPUT
           fi
