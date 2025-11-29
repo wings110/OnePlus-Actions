@@ -1,4 +1,4 @@
-name: call-build-sukisu-40129
+name: call-build-sukisu
 permissions:
   contents: write
   actions: write
@@ -60,9 +60,9 @@ jobs:
       - name: "⚙️ Setup Cache Env | 设置缓存环境"
         run: |
           echo "🔧 正在设置机型隔离缓存目录..."
-          echo "CCACHE_DIR=$HOME/.ccache_${{ inputs.FEIL }}_SukiSU_40129" >> $GITHUB_ENV
-          mkdir -p "$HOME/.ccache_${{ inputs.FEIL }}_SukiSU_40129"
-          echo "✅ 缓存目录已设置: $HOME/.ccache_${{ inputs.FEIL }}_SukiSU_40129"
+          echo "CCACHE_DIR=$HOME/.ccache_${{ inputs.FEIL }}_SukiSU" >> $GITHUB_ENV
+          mkdir -p "$HOME/.ccache_${{ inputs.FEIL }}_SukiSU"
+          echo "✅ 缓存目录已设置: $HOME/.ccache_${{ inputs.FEIL }}_SukiSU"
 
       - name: "🔐 Configure Git | 配置Git账户"
         run: |
@@ -83,10 +83,10 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ${{ env.CCACHE_DIR }}
-          key: ccache-${{ runner.os }}-${{ github.ref }}-${{ inputs.FEIL }}-SukiSU-40129
+          key: ccache-${{ runner.os }}-${{ github.ref }}-${{ inputs.FEIL }}-SukiSU
           restore-keys: |
-            ccache-${{ runner.os }}-${{ inputs.FEIL }}-SukiSU-40129
-            ccache-${{ runner.os }}-SukiSU-40129
+            ccache-${{ runner.os }}-${{ inputs.FEIL }}-SukiSU
+            ccache-${{ runner.os }}-SukiSU
 
       - name: "⚙️ Initialize ccache | 初始化ccache"
         run: |
@@ -127,12 +127,12 @@ jobs:
 
           echo "🔄 同步代码库(使用$(nproc --all)线程)..."
           repo sync -c -j$(nproc --all) --no-tags --no-clone-bundle --force-sync
-
+ 
           echo "✅ 内核源码克隆完成"
-
+     
           rm kernel_platform/common/android/abi_gki_protected_exports_* || echo "No protected exports!"
           rm kernel_platform/msm-kernel/android/abi_gki_protected_exports_* || echo "No protected exports!"
-          
+
           echo "🔧 正在配置内核版本信息..."
           # Remove -dirty in kernel version
           sed -i 's/ -dirty//g' kernel_platform/common/scripts/setlocalversion
@@ -173,11 +173,10 @@ jobs:
           # 下载并执行设置脚本
           echo "🛠️ 正在设置SukiSU Ultra..."
           curl -LSs "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU-Ultra/susfs-main/kernel/setup.sh" | bash -s susfs-main
-          cd KernelSU && git checkout f1909411c0c3b464336967c70fd8a21b82225307 && cd ..
           
           cd KernelSU
           echo "⬇️ 下载SukiSU设置工具..."
-          curl -L -o sukisu_setup.bin https://github.com/Xiaomichael/OnePlus-Actions/raw/Build/script/sukisu_setup_40129.bin
+          curl -L -o sukisu_setup.bin https://github.com/Xiaomichael/OnePlus-Actions/raw/Build/script/sukisu_setup.bin
           chmod +x sukisu_setup.bin
           
           # 验证Makefile存在
@@ -198,18 +197,6 @@ jobs:
 
           echo "⬇️ 克隆所需补丁..."
           git clone https://gitlab.com/simonpunk/susfs4ksu.git -b gki-${{ inputs.ANDROID_VERSION }}-${{ inputs.KERNEL_VERSION }}
-          if [ "${{ inputs.KERNEL_VERSION }}" == "6.1" ]; then
-            cd susfs4ksu && git checkout a5ab34511ea2eae51c48fff18c87adbdeb11cf2c && cd ..
-          fi
-          if [ "${{ inputs.KERNEL_VERSION }}" == "6.6" ]; then
-            cd susfs4ksu && git checkout 1aa525d29e13ff04f0e438bb2cc1afd645302e95 && cd ..
-          fi
-          if [ "${{ inputs.KERNEL_VERSION }}" == "5.15" ]; then
-            cd susfs4ksu && git checkout 125374c5e90af4ca81a63985c8894861b7f11fcf && cd ..
-          fi     
-          if [ "${{ inputs.KERNEL_VERSION }}" == "5.10" ]; then
-            cd susfs4ksu && git checkout 3b74d50936b03a3fcaef0a5e9b01fbdf7fc1124e && cd ..
-          fi        
           git clone https://github.com/Xiaomichael/kernel_patches.git
           git clone https://github.com/ShirkNeko/SukiSU_patch.git
           
@@ -298,17 +285,12 @@ jobs:
             echo "📦 启用 KPM..."
             echo "CONFIG_KPM=y" >> ./common/arch/arm64/configs/gki_defconfig
           fi
-
+          
           echo "📦 启用 SUSFS 功能..."
           echo "CONFIG_KSU_SUSFS=y" >> ./common/arch/arm64/configs/gki_defconfig
           echo "CONFIG_KSU_SUSFS_SUS_PATH=y" >> ./common/arch/arm64/configs/gki_defconfig
           echo "CONFIG_KSU_SUSFS_SUS_MOUNT=y" >> ./common/arch/arm64/configs/gki_defconfig
-          echo "CONFIG_KSU_SUSFS_AUTO_ADD_SUS_KSU_DEFAULT_MOUNT=y" >> ./common/arch/arm64/configs/gki_defconfig
-          echo "CONFIG_KSU_SUSFS_AUTO_ADD_SUS_BIND_MOUNT=y" >> ./common/arch/arm64/configs/gki_defconfig
           echo "CONFIG_KSU_SUSFS_SUS_KSTAT=y" >> ./common/arch/arm64/configs/gki_defconfig
-          echo "CONFIG_KSU_SUSFS_SUS_OVERLAYFS=n" >> ./common/arch/arm64/configs/gki_defconfig
-          echo "CONFIG_KSU_SUSFS_TRY_UMOUNT=y" >> ./common/arch/arm64/configs/gki_defconfig
-          echo "CONFIG_KSU_SUSFS_AUTO_ADD_TRY_UMOUNT_FOR_BIND_MOUNT=y" >> ./common/arch/arm64/configs/gki_defconfig
           echo "CONFIG_KSU_SUSFS_SPOOF_UNAME=y" >> ./common/arch/arm64/configs/gki_defconfig
           echo "CONFIG_KSU_SUSFS_ENABLE_LOG=y" >> ./common/arch/arm64/configs/gki_defconfig
           echo "CONFIG_KSU_SUSFS_HIDE_KSU_SUSFS_SYMBOLS=y" >> ./common/arch/arm64/configs/gki_defconfig
