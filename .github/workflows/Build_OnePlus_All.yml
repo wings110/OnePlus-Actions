@@ -20,6 +20,19 @@ jobs:
       bbg: "On"
       proxy: "On"
 
+  mt6991:
+    uses: ./.github/workflows/kernel-mt6991.yml
+    secrets: inherit
+    with:
+      CPU: "mt6991"
+      ANDROID_VERSION: "android15"
+      KERNEL_VERSION: "6.6"
+      KPM: "Off"
+      lz4kd: "Off"
+      bbr: "Off"
+      bbg: "On"
+      proxy: "Off"
+      
   sm8650:
     uses: ./.github/workflows/kernel-sm8650.yml
     secrets: inherit
@@ -33,19 +46,6 @@ jobs:
       bbg: "On"
       proxy: "On"
 
-  mt6991:
-    uses: ./.github/workflows/kernel-mt6991.yml
-    secrets: inherit
-    with:
-      CPU: "mt6991"
-      ANDROID_VERSION: "android15"
-      KERNEL_VERSION: "6.6"
-      KPM: "Off"
-      lz4kd: "Off"
-      bbr: "Off"
-      bbg: "On"
-      proxy: "Off" # MTK系列CPU跑的时候需关闭否则出现恶性Bug
-
   mt6989:
     uses: ./.github/workflows/kernel-mt6989.yml
     secrets: inherit
@@ -57,7 +57,7 @@ jobs:
       lz4kd: "Off"
       bbr: "Off"
       bbg: "On"
-      proxy: "Off" # MTK系列CPU跑的时候需关闭否则出现恶性Bug
+      proxy: "Off"
 
   sm8550:
     uses: ./.github/workflows/kernel-sm8550.yml
