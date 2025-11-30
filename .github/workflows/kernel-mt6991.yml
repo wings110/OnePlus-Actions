@@ -35,7 +35,7 @@ on:
         type: string
        
 jobs:
-  build-kernel-mt6989:
+  build-kernel-mt6991:
     strategy:
       fail-fast: false
       matrix:
