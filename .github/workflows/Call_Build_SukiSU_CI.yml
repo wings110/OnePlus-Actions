@@ -1,4 +1,4 @@
-name: call-build-sukisu
+name: call-build-sukisu-cl
 permissions:
   contents: write
   actions: write

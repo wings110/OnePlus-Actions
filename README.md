@@ -11,7 +11,6 @@
 ## 设备支持
 
 > [!TIP]
-> **一加6/6系列用户**请移步至：[专用仓库](https://github.com/Xiaomichael/oneplus_6.6_devices)
 
 ## 使用指南
 这是一键编译所有内核版本的分支，不建议日常使用，在Actions里面找到他直接运行即可

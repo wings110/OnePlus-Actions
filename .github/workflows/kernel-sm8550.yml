@@ -40,10 +40,10 @@ jobs:
       fail-fast: false
       matrix:
         include:
-        - FEIL: 'oneplus_11'
+        # - FEIL: 'oneplus_11'
         # - FEIL: 'oneplus_12_r'
         # - FEIL: 'oneplus_ace2_pro'
-        # - FEIL: 'oneplus_ace3'
+        - FEIL: 'oneplus_ace3_b'
         # - FEIL: 'oneplus_open'
         
     uses: ./.github/workflows/Call_Build_SukiSU.yml
