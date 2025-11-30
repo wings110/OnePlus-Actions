@@ -1,0 +1,56 @@
+name: Build-mt6991
+permissions:
+  contents: write
+  actions: write
+  
+on:
+  workflow_call: 
+    inputs:
+      CPU:
+        required: true
+        type: string
+      FEIL:
+        required: false
+        type: string
+      ANDROID_VERSION:
+        required: true
+        type: string
+      KERNEL_VERSION:
+        required: true
+        type: string
+      KPM:
+        required: true
+        type: string
+      lz4kd:
+        required: true
+        type: string
+      bbr:
+        required: true
+        type: string
+      bbg:
+        required: true
+        type: string
+      proxy:
+        required: true
+        type: string
+       
+jobs:
+  build-kernel-mt6989:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        - FEIL: 'oneplus_ace5_ultra'
+        
+    uses: ./.github/workflows/Call_Build_SukiSU.yml
+    secrets: inherit
+    with:
+      CPU: ${{ inputs.CPU }}
+      FEIL: ${{ matrix.FEIL }}
+      ANDROID_VERSION: ${{ inputs.ANDROID_VERSION }}
+      KERNEL_VERSION: ${{ inputs.KERNEL_VERSION }}
+      KPM: ${{ inputs.KPM }}
+      lz4kd: ${{ inputs.lz4kd }}
+      bbr: ${{ inputs.bbr }}
+      bbg: ${{ inputs.bbg }}
+      proxy: ${{ inputs.proxy }}
