@@ -179,9 +179,9 @@ jobs:
           curl -L -o sukisu_setup.bin https://github.com/Xiaomichael/OnePlus-Actions/raw/Build/script/sukisu_setup.bin
           chmod +x sukisu_setup.bin
           
-          # 验证Makefile存在
-          if [ ! -f "kernel/Makefile" ]; then
-            echo "❌ 错误：缺少kernel/Makefile"
+          # 验证Kbuild存在
+          if [ ! -f "kernel/Kbuild" ]; then
+            echo "❌ 错误：缺少kernel/Kbuild"
             ls -la
             exit 1
           fi
@@ -325,7 +325,7 @@ jobs:
             echo "CONFIG_ZRAM_WRITEBACK=y" >> ./common/arch/arm64/configs/gki_defconfig
           fi
           
-          if [ "${{ inputs.KERNEL_VERSION }}" == "6.1" || [ "${{ inputs.KERNEL_VERSION }}" == "6.6" ]]; then
+          if [ "${{ inputs.KERNEL_VERSION }}" == "6.1" ] || [ "${{ inputs.KERNEL_VERSION }}" == "6.6" ]; then
             # Add O2 config
             echo "📦 为6.1 / 6.6加入O2优化..."
             echo "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=y" >> ./common/arch/arm64/configs/gki_defconfig
