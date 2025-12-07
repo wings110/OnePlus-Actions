@@ -231,17 +231,7 @@ jobs:
           sed -i '$i res=$(echo "$res" | sed '\''s/-dirty//g'\'')' kernel_platform/common/scripts/setlocalversion
           sed -i '$i res=$(echo "$res" | sed '\''s/-dirty//g'\'')' kernel_platform/msm-kernel/scripts/setlocalversion
           sed -i '$i res=$(echo "$res" | sed '\''s/-dirty//g'\'')' kernel_platform/external/dtc/scripts/setlocalversion
-          
-          if [ "${{ github.event.inputs.KERNEL_VERSION }}" != "6.6" ]; then
-            sed -i '$s|echo "\$res"|echo "-${{ github.event.inputs.ANDROID_VERSION }}-oki-xiaoxiaow"|' kernel_platform/common/scripts/setlocalversion            
-            sed -i '$s|echo "\$res"|echo "-${{ github.event.inputs.ANDROID_VERSION }}-oki-xiaoxiaow"|' kernel_platform/msm-kernel/scripts/setlocalversion
-            sed -i '$s|echo "\$res"|echo "-${{ github.event.inputs.ANDROID_VERSION }}-oki-xiaoxiaow"|' kernel_platform/external/dtc/scripts/setlocalversion
-          else
-            ESCAPED_SUFFIX=$(printf '%s\n' "-${{ github.event.inputs.ANDROID_VERSION }}-oki-xiaoxiaow" | sed 's:[\/&]:\\&:g')
-            sudo sed -i "s/-4k/$ESCAPED_SUFFIX/g" kernel_platform/common/arch/arm64/configs/gki_defconfig
-            sed -i 's/${scm_version}//' kernel_platform/common/scripts/setlocalversion
-            sed -i 's/${scm_version}//' kernel_platform/msm-kernel/scripts/setlocalversion
-          fi
+
 
           echo "✅ 内核配置完成"
 
@@ -263,7 +253,7 @@ jobs:
           # 下载并执行设置脚本
           echo "🛠️ 正在设置SukiSU Ultra..."
           curl -LSs "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU-Ultra/builtin/kernel/setup.sh" | bash -s builtin
-          cd KernelSU && git checkout f1909411c0c3b464336967c70fd8a21b82225307 && cd ..
+          cd KernelSU && git && cd ..
           
           cd KernelSU
           echo "⬇️ 下载SukiSU设置工具..."
@@ -289,16 +279,16 @@ jobs:
           echo "⬇️ 克隆所需补丁..."
           git clone https://gitlab.com/simonpunk/susfs4ksu.git -b gki-${{ github.event.inputs.ANDROID_VERSION }}-${{ github.event.inputs.KERNEL_VERSION }}
           if [ "${{ github.event.inputs.KERNEL_VERSION }}" == "6.1" ]; then
-            cd susfs4ksu && git checkout a5ab34511ea2eae51c48fff18c87adbdeb11cf2c && cd ..
+            cd susfs4ksu && cd ..
           fi
           if [ "${{ github.event.inputs.KERNEL_VERSION }}" == "6.6" ]; then
-            cd susfs4ksu && git checkout 1aa525d29e13ff04f0e438bb2cc1afd645302e95 && cd ..
+            cd susfs4ksu && cd ..
           fi
           if [ "${{ github.event.inputs.KERNEL_VERSION }}" == "5.15" ]; then
-            cd susfs4ksu && git checkout 125374c5e90af4ca81a63985c8894861b7f11fcf && cd ..
+            cd susfs4ksu && cd ..
           fi     
           if [ "${{ github.event.inputs.KERNEL_VERSION }}" == "5.10" ]; then
-            cd susfs4ksu && git checkout 3b74d50936b03a3fcaef0a5e9b01fbdf7fc1124e && cd ..
+            cd susfs4ksu && cd ..
           fi        
           git clone https://github.com/Xiaomichael/kernel_patches.git
           git clone https://github.com/ShirkNeko/SukiSU_patch.git
