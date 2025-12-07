@@ -1,4 +1,4 @@
-name: Build OnePlus All
+name: Build SukiSU Ultra All Kernel
 permissions:
   contents: write
   actions: write
