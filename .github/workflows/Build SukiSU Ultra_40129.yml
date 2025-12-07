@@ -263,8 +263,6 @@ jobs:
           # 下载并执行设置脚本
           echo "🛠️ 正在设置SukiSU Ultra..."
           curl -LSs "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU-Ultra/builtin/kernel/setup.sh" | bash -s builtin
-          cd KernelSU && git && cd ..
-          
           cd KernelSU
           echo "⬇️ 下载SukiSU设置工具..."
           curl -L -o sukisu_setup.bin https://github.com/Xiaomichael/OnePlus-Actions/raw/Build/script/sukisu_setup_40129.bin
@@ -288,18 +286,7 @@ jobs:
 
           echo "⬇️ 克隆所需补丁..."
           git clone https://gitlab.com/simonpunk/susfs4ksu.git -b gki-${{ github.event.inputs.ANDROID_VERSION }}-${{ github.event.inputs.KERNEL_VERSION }}
-          if [ "${{ github.event.inputs.KERNEL_VERSION }}" == "6.1" ]; then
-            cd susfs4ksu && cd ..
-          fi
-          if [ "${{ github.event.inputs.KERNEL_VERSION }}" == "6.6" ]; then
-            cd susfs4ksu && cd ..
-          fi
-          if [ "${{ github.event.inputs.KERNEL_VERSION }}" == "5.15" ]; then
-            cd susfs4ksu && cd ..
-          fi     
-          if [ "${{ github.event.inputs.KERNEL_VERSION }}" == "5.10" ]; then
-            cd susfs4ksu && cd ..
-          fi        
+          # 不再强制切换到特定 commit，使用仓库当前最新提交
           git clone https://github.com/Xiaomichael/kernel_patches.git
           git clone https://github.com/ShirkNeko/SukiSU_patch.git
           
