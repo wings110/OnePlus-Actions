@@ -7,9 +7,9 @@ on:
         type: choice
         description: '清理的工作流名称'
         required: true
-        default: 'Build Oneplus All'
+        default: 'Build SukiSU Ultra All Kernel'
         options:
-          - Build Oneplus All
+          - 'Build SukiSU Ultra All Kernel'
       count:
         description: '最多清理的运行次数'
         required: false
