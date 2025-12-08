@@ -1,4 +1,4 @@
-name: Build OnePlus SukiSU Ultra 稳定版(40129)
+name: Build SukiSU Ultra (40129)
 on:
   workflow_dispatch:
     inputs:

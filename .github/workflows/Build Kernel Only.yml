@@ -1,4 +1,4 @@
-name: Build OnePlus Kernel Only
+name: Build Kernel Only
 on:
   workflow_dispatch:
     inputs:
