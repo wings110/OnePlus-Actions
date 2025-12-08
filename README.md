@@ -12,6 +12,6 @@
 支持欧加真内核版本 `5.10-6.6` 的设备，只要跑出来内核版本号一样就可以用
 
 ## 使用指南
-这是一键编译所有内核版本的分支，不建议日常使用(容易封号)，在Actions里面找到它直接一键运行即可
+这是一键编译所有内核版本的分支，不建议日常使用(跑太多容易封号)，在Actions里面找到它直接一键运行即可
 
-<img width="397" height="60" alt="image" src="https://github.com/user-attachments/assets/aa23728f-f69c-41be-9dc4-0c05694ed36f" />
+<img width="390" height="114" alt="{02D67454-7486-408F-B54D-A52347A301E2}" src="https://github.com/user-attachments/assets/aeaf61d7-3b1b-49bd-95b7-f2439423040f" />
