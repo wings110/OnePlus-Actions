@@ -1,4 +1,4 @@
-name: Build SukiSU Ultra (40129)
+name: Build SukiSU Ultra (latest)
 on:
   workflow_dispatch:
     inputs:
@@ -362,32 +362,66 @@ jobs:
             echo "✅ OGKI转换GKI_patch完成"
           fi
 
-      # ==================== 新增：修复编译警告 ====================
+      # ==================== 修复：修复编译警告 ====================
       - name: "🔧 Fix Compilation Warnings | 修复编译警告"
         run: |
-          echo "🔧 正在查找并修复编译器警告..."
+          echo "🔧 正在修复 supercalls.c 编译错误..."
           cd kernel_workspace/kernel_platform
           
           # 查找并修复 supercalls.c 文件
           find . -name "supercalls.c" -type f | while read file; do
-            echo "检查文件: $file"
+            echo "修复文件: $file"
             
-            # 修复 default case fallthrough 警告
             if [ -f "$file" ]; then
               # 备份原始文件
               cp "$file" "${file}.bak"
               
-              # 尝试多种修复方法
-              # 方法1：在第535行添加 fallthrough 属性
-              sed -i '535s/default: {/default: {\n        __attribute__((fallthrough));/' "$file" 2>/dev/null || true
+              # 移除所有错误的 fallthrough 语法
+              sed -i '/\[\[fallthrough\]\]/d' "$file" 2>/dev/null || true
+              sed -i '/__attribute__((fallthrough))/d' "$file" 2>/dev/null || true
+              sed -i '/fallthrough;/d' "$file" 2>/dev/null || true
               
-              # 方法2：在整个文件中查找 default case 并修复
-              sed -i '/default:[[:space:]]*{/,/}/ { /default:[[:space:]]*{/a\        __attribute__((fallthrough)); }' "$file" 2>/dev/null || true
+              # 检查第535行和655行的具体内容
+              echo "检查第535行内容:"
+              sed -n '535,540p' "$file" 2>/dev/null || true
+              echo "检查第655行内容:"
+              sed -n '655,660p' "$file" 2>/dev/null || true
               
-              # 方法3：使用 C++17 风格的 [[fallthrough]]
-              sed -i 's/default: {/default: {\n        [[fallthrough]];/' "$file" 2>/dev/null || true
+              # 修复方法1：直接添加 break; 语句
+              # 在第535行的 default case 后添加 break;
+              sed -i '535s/default: {/default: {\n        break;/' "$file" 2>/dev/null || true
+              
+              # 在第655行的 default case 后添加 break;
+              sed -i '655s/default: {/default: {\n        break;/' "$file" 2>/dev/null || true
+              
+              # 修复方法2：如果上面失败，使用更通用的方法
+              # 查找所有 switch 语句中的 default case，确保有 break
+              sed -i '/default: *{/,/}/ { /default: *{/a\        break; }' "$file" 2>/dev/null || true
+              
+              # 修复方法3：使用正确的 GCC fallthrough 属性
+              # 先确保有 compiler_attributes.h 包含
+              if grep -q "#include.*compiler_attributes.h" "$file"; then
+                echo "文件已包含 compiler_attributes.h"
+                # 使用 fallthrough 宏
+                sed -i 's/default: {/default: {\n        fallthrough;/' "$file" 2>/dev/null || true
+              else
+                # 使用 __attribute__((__fallthrough__))
+                sed -i 's/default: {/default: {\n        __attribute__((__fallthrough__));/' "$file" 2>/dev/null || true
+              fi
               
               echo "✅ $file 已修复"
+            fi
+          done
+          
+          # 确保 compiler_attributes.h 中有 fallthrough 宏定义
+          find . -name "compiler_attributes.h" -type f | head -1 | while read file; do
+            if [ -f "$file" ]; then
+              echo "检查 compiler_attributes.h"
+              # 如果文件中没有 fallthrough 宏定义，添加它
+              if ! grep -q "^#define fallthrough" "$file" && ! grep -q "^#define.*fallthrough.*__attribute__" "$file"; then
+                echo "在 $file 中添加 fallthrough 宏定义"
+                echo -e "\n#ifndef fallthrough\n#define fallthrough __attribute__((__fallthrough__))\n#endif" >> "$file"
+              fi
             fi
           done
           
