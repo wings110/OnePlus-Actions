@@ -230,13 +230,13 @@ fi
 
 if [ "$lz4kd" = "Off" ] && [ "$KERNEL_VERSION" = "6.1" ]; then
   echo "📦 正在为 6.1 应用 lz4 + zstd 补丁..."
-  git apply 001-lz4.patch || true
+  git apply -p1 < 001-lz4.patch || true
   patch -p1 < 002-zstd.patch || true
 fi
 
 if [ "$lz4kd" = "Off" ] && [ "$KERNEL_VERSION" = "6.6" ]; then
   echo "📦 正在为 6.6 应用 lz4 补丁..."
-  git apply 001-lz4.patch || true
+  git apply -p1 < 001-lz4.patch || true
 fi
 
 if [ "$lz4kd" = "On" ]; then

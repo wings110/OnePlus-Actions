@@ -166,7 +166,7 @@ cd ./common
 
 if [ "$lz4kd" = "Off" ] && [ "$KERNEL_VERSION" = "6.1" ]; then
   echo "📦 Applying lz4+zstd patches..."
-  git apply 001-lz4.patch || true
+  git apply -p1 < 001-lz4.patch || true
   patch -p1 < 002-zstd.patch || true
 fi
 

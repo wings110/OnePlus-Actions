@@ -21,11 +21,11 @@ ask() {
 }
 
 # --- Interactive Inputs ---
-CPU=$(ask "Enter CPU branch (e.g., sm8650, sm8550, sm8475)" "sm8650")
-FEIL=$(ask "Enter phone model (e.g., oneplus_12, oneplus_11)" "oneplus_12")
+CPU=$(ask "Enter CPU branch (e.g., sm8750, sm8650, sm8550, sm8475)" "sm8650")
+FEIL=$(ask "Enter phone model (e.g., oneplus_13_b, oneplus_12_b, oneplus_11_b)" "oneplus_12_b")
 ANDROID_VERSION=$(ask "Enter kernel Android version (android14, android13, android12)" "android14")
-KERNEL_VERSION=$(ask "Enter kernel version (6.1, 5.15, 5.10)" "6.1")
-lz4kd=$(ask "Enable lz4kd? (6.1 uses lz4 + zstd if Off) (On/Off)" "Off")
+KERNEL_VERSION=$(ask "Enter kernel version (6.6, 6.1, 5.15, 5.10)" "6.1")
+lz4kd=$(ask "Enable lz4kd? (6.1 uses lz4 + zstd if Off; 6.6 uses lz4 if Off) (On/Off)" "Off")
 bbr=$(ask "Enable BBR congestion control algorithm? (On/Off)" "Off")
 bbg=$(ask "Enable Baseband-Guard? (On/Off)" "On")
 proxy=$(ask "Add proxy performance optimization? (if MTK CPU must be Off!) (On/Off)" "On")
@@ -62,7 +62,7 @@ sudo DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends 
   python3 git curl ccache libelf-dev \
   build-essential flex bison libssl-dev \
   libncurses-dev liblz4-tool zlib1g-dev \
-  libxml2-utils rsync unzip python3-pip gawk
+  libxml2-utils rsync unzip python3-pip gawk dos2unix
 clear
 echo "✅ All dependencies installed successfully."
 
@@ -102,7 +102,6 @@ fi
 
 # Clone Kernel Source
 echo "⬇️ Cloning kernel source code..."
-# If the directory already exists from a previous failed run, remove it for a clean start
 sudo rm -rf kernel_workspace
 mkdir -p kernel_workspace && cd kernel_workspace
 
@@ -124,9 +123,18 @@ sed -i 's/ -dirty//g' kernel_platform/external/dtc/scripts/setlocalversion
 sed -i '$i res=$(echo "$res" | sed '\''s/-dirty//g'\'')' kernel_platform/common/scripts/setlocalversion
 sed -i '$i res=$(echo "$res" | sed '\''s/-dirty//g'\'')' kernel_platform/msm-kernel/scripts/setlocalversion
 sed -i '$i res=$(echo "$res" | sed '\''s/-dirty//g'\'')' kernel_platform/external/dtc/scripts/setlocalversion
-sed -i '$s|echo "\$res"|echo "-$adv-oki-xiaoxiaow"|' kernel_platform/common/scripts/setlocalversion
-sed -i '$s|echo "\$res"|echo "-$adv-oki-xiaoxiaow"|' kernel_platform/msm-kernel/scripts/setlocalversion
-sed -i '$s|echo "\$res"|echo "-$adv-oki-xiaoxiaow"|' kernel_platform/external/dtc/scripts/setlocalversion
+
+if [ "$KERNEL_VERSION" != "6.6" ]; then
+    sed -i '$s|echo "\$res"|echo "-$adv-oki-xiaoxiaow"|' kernel_platform/common/scripts/setlocalversion
+    sed -i '$s|echo "\$res"|echo "-$adv-oki-xiaoxiaow"|' kernel_platform/msm-kernel/scripts/setlocalversion
+    sed -i '$s|echo "\$res"|echo "-$adv-oki-xiaoxiaow"|' kernel_platform/external/dtc/scripts/setlocalversion
+else
+    ESCAPED_SUFFIX=$(printf '%s\n' "-$adv-oki-xiaoxiaow" | sed 's:[\/&]:\\&:g')
+    sudo sed -i "s/-4k/$ESCAPED_SUFFIX/g" kernel_platform/common/arch/arm64/configs/gki_defconfig
+    sed -i 's/${scm_version}//' kernel_platform/common/scripts/setlocalversion
+    sed -i 's/${scm_version}//' kernel_platform/msm-kernel/scripts/setlocalversion
+fi
+
 echo "✅ Kernel source cloned and configured."
 
 if [ "$bbg" = "On" ]; then
@@ -156,6 +164,20 @@ cd ../..
 # Set up SUSFS and other patches
 echo "🔧 Setting up SUSFS and applying patches..."
 git clone https://gitlab.com/simonpunk/susfs4ksu.git -b gki-${ANDROID_VERSION}-${KERNEL_VERSION}
+
+if [ "$KERNEL_VERSION" = "6.1" ]; then
+    cd susfs4ksu && git checkout a162e2469d0b472545e5e46457eee171c0975fb0 && cd ..
+fi
+if [ "$KERNEL_VERSION" = "6.6" ]; then
+    cd susfs4ksu && git checkout f450ec00bf592d080f59b01ff6f9242456c9a427 && cd ..
+fi
+if [ "$KERNEL_VERSION" = "5.15" ]; then
+    cd susfs4ksu && git checkout babf6be195576f09aae79650d47abf6a76e8a21b && cd ..
+fi
+if [ "$KERNEL_VERSION" = "5.10" ]; then
+    cd susfs4ksu && git checkout 8a76ba240d1f7315352b49d97d854a4b166e5b47 && cd ..
+fi
+
 git clone https://github.com/Xiaomichael/kernel_patches.git
 git clone https://github.com/ShirkNeko/SukiSU_patch.git
 
@@ -166,12 +188,9 @@ cp ../kernel_patches/next/scope_min_manual_hooks_v1.4.patch ./common/
 cp ../susfs4ksu/kernel_patches/fs/* ./common/fs/
 cp ../susfs4ksu/kernel_patches/include/linux/* ./common/include/linux/
 
-if [ "$lz4kd" = "Off" ] && [ "$KERNEL_VERSION" = "6.1" ]; then
-  echo "📦 Copying lz4+zstd patches..."
-  cp ../kernel_patches/zram/001-lz4.patch ./common/
-  cp ../kernel_patches/zram/lz4armv8.S ./common/lib
-  cp ../kernel_patches/zram/002-zstd.patch ./common/
-fi
+cp ../kernel_patches/zram/001-lz4.patch ./common/
+cp ../kernel_patches/zram/lz4armv8.S ./common/lib
+cp ../kernel_patches/zram/002-zstd.patch ./common/
 
 if [ "$lz4kd" = "On" ]; then
   echo "🚀 Copying lz4kd patches..."
@@ -183,15 +202,16 @@ fi
 
 echo "🔧 Applying patches..."
 cd ./common
-patch -p1 < 50_add_susfs_in_gki-${ANDROID_VERSION}-${KERNEL_VERSION}.patch || true
-cp ../../kernel_patches/69_hide_stuff.patch ./
-patch -p1 -F 3 < 69_hide_stuff.patch || true
-patch -p1 --fuzz=3 < scope_min_manual_hooks_v1.4.patch
 
 if [ "$lz4kd" = "Off" ] && [ "$KERNEL_VERSION" = "6.1" ]; then
   echo "📦 Applying lz4+zstd patches..."
-  git apply 001-lz4.patch || true
+  git apply -p1 < 001-lz4.patch || true
   patch -p1 < 002-zstd.patch || true
+fi
+
+if [ "$lz4kd" = "Off" ] && [ "$KERNEL_VERSION" = "6.6" ]; then
+  echo "📦 Applying lz4 patch..."
+  git apply -p1 < 001-lz4.patch || true
 fi
 
 if [ "$lz4kd" = "On" ]; then
@@ -201,9 +221,39 @@ if [ "$lz4kd" = "On" ]; then
   cp ../../SukiSU_patch/other/zram/zram_patch/${KERNEL_VERSION}/lz4k_oplus.patch ./
   patch -p1 -F 3 < lz4k_oplus.patch || true
 fi
+
+patch -p1 < 50_add_susfs_in_gki-${ANDROID_VERSION}-${KERNEL_VERSION}.patch || true
+cp ../../kernel_patches/69_hide_stuff.patch ./
+patch -p1 -F 3 < 69_hide_stuff.patch || true
+patch -p1 --fuzz=3 < scope_min_manual_hooks_v1.4.patch
+
 echo "✅ All patches applied."
 cd ../..
 # Back to $WORKSPACE/kernel_workspace
+
+if [ "$KERNEL_VERSION" = "6.6" ]; then
+    cd kernel_platform/common
+    echo "⬇️ Pulling SCHED patch..."
+    if [ "$FEIL" = "oneplus_ace5_ultra" ]; then
+        git clone https://github.com/Numbersf/SCHED_PATCH.git -b "mt6991"
+    else
+        git clone https://github.com/Numbersf/SCHED_PATCH.git -b "sm8750"
+    fi
+    cp ./SCHED_PATCH/fengchi_${FEIL}.patch ./
+    if [[ -f "fengchi_${FEIL}.patch" ]]; then
+        echo "⚙️ Applying SCHED patch..."
+        dos2unix "fengchi_${FEIL}.patch"
+        patch -p1 -F 3 < "fengchi_${FEIL}.patch"
+        echo "✅ SCHED patch applied successfully."
+    else
+        sed -i '1iobj-y += hmbird_patch.o' drivers/Makefile
+        wget https://github.com/Numbersf/Action-Build/raw/SukiSU-Ultra/patches/hmbird_patch.patch
+        echo "⚙️ Applying OGKI to GKI conversion patch..."
+        patch -p1 -F 3 < hmbird_patch.patch
+        echo "✅ OGKI to GKI patch applied."
+    fi
+    cd ../..
+fi
 
 # Configure Kernel Options
 echo "⚙️ Configuring kernel build options (defconfig)..."
@@ -214,6 +264,7 @@ cat <<EOT >> "$DEFCONFIG_PATH"
 #--- KernelSU Next & SUSFS Custom Configs ---
 CONFIG_KSU=y
 CONFIG_KSU_KPROBES_HOOK=n
+CONFIG_KSU_MANUAL_HOOK=y
 CONFIG_KSU_SUSFS=y
 CONFIG_KSU_SUSFS_SUS_PATH=y
 CONFIG_KSU_SUSFS_SUS_MOUNT=y
@@ -235,7 +286,7 @@ CONFIG_TMPFS_XATTR=y
 CONFIG_TMPFS_POSIX_ACL=y
 EOT
 
-if [ "$bbg" == "On" ]; then
+if [ "$bbg" = "On" ]; then
   echo "📦 Enabling BBG..."
   cat <<EOT >> "$DEFCONFIG_PATH"
 CONFIG_BBG=y
@@ -264,7 +315,10 @@ CONFIG_ZRAM_WRITEBACK=y
 EOT
 fi
 
-if [ "$KERNEL_VERSION" = "6.1" ]; then echo "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=y" >> "$DEFCONFIG_PATH"; fi
+if [ "$KERNEL_VERSION" = "6.1" ] || [ "$KERNEL_VERSION" = "6.6" ]; then
+  echo "📦 Enabling O2 optimization for 6.1 & 6.6..."
+  echo "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=y" >> "$DEFCONFIG_PATH"
+fi
 
 if [ "$proxy" = "On" ]; then
   echo "📦 Adding proxy optimizations..."
@@ -318,9 +372,12 @@ cd "$WORKSPACE/kernel_workspace/kernel_platform/common"
 MAKE_CMD_COMMON="make -j$(nproc --all) LLVM=1 ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CC=\"ccache clang\" RUSTC=../../prebuilts/rust/linux-x86/1.73.0b/bin/rustc PAHOLE=../../prebuilts/kernel-build-tools/linux-x86/bin/pahole LD=ld.lld HOSTLD=ld.lld O=out gki_defconfig all"
 
 if [ "$KERNEL_VERSION" = "6.1" ]; then
-    export KBUILD_BUILD_TIMESTAMP="Wed Aug 20 07:17:20 UTC 2025"
+    export KBUILD_BUILD_TIMESTAMP="Tue Sep 23 07:41:33 UTC 2025"
     export KBUILD_BUILD_VERSION=1
     export PATH="$WORKSPACE/kernel_workspace/kernel_platform/prebuilts/clang/host/linux-x86/clang-r487747c/bin:$PATH"
+    eval "$MAKE_CMD_COMMON KCFLAGS+=-O2"
+elif [ "$KERNEL_VERSION" = "6.6" ]; then
+    export PATH="/usr/lib/ccache:$WORKSPACE/kernel_workspace/kernel_platform/prebuilts/clang/host/linux-x86/clang-r510928/bin:$PATH"
     eval "$MAKE_CMD_COMMON KCFLAGS+=-O2"
 elif [ "$KERNEL_VERSION" = "5.15" ]; then
     export PATH="$WORKSPACE/kernel_workspace/kernel_platform/prebuilts/clang/host/linux-x86/clang-r450784e/bin:$PATH"
@@ -354,6 +411,8 @@ if [ "$lz4kd" = "On" ]; then
   ARTIFACT_NAME="${FEIL}_KernelSU_Next_lz4kd_${KSUVER}"
 elif [ "$KERNEL_VERSION" = "6.1" ]; then
   ARTIFACT_NAME="${FEIL}_KernelSU_Next_lz4_zstd_${KSUVER}"
+elif [ "$KERNEL_VERSION" = "6.6" ]; then
+  ARTIFACT_NAME="${FEIL}_KernelSU_Next_lz4_${KSUVER}"
 else
   ARTIFACT_NAME="${FEIL}_KernelSU_Next_${KSUVER}"
 fi

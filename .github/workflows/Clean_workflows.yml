@@ -7,11 +7,13 @@ on:
         type: choice
         description: '清理的工作流名称'
         required: true
-        default: 'Build OnePlus SukiSU Ultra'
+        default: 'Build SukiSU Ultra'
         options:
-          - Build OnePlus SukiSU Ultra
-          - Build OnePlus KernelSU Next
-          - Build OnePlus Kernel Only
+          - Build SukiSU Ultra
+          - Build KernelSU Next
+          - Build Kernel Only
+          - Build KernelSU Official
+          - Build SukiSU Ultra (40129)
       count:
         description: '最多清理的运行次数'
         required: false
@@ -55,7 +57,6 @@ jobs:
 
       - name: 清理指定工作流及本工作流运行记录
         env:
-          # 自动获取当前仓库信息
           REPO: ${{ github.repository }}
           COUNT: ${{ inputs.count }}
           DELETE_FAILED: ${{ inputs.delete_failed }}
