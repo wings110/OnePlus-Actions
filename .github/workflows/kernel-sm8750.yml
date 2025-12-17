@@ -55,6 +55,7 @@ jobs:
       FEIL: ${{ matrix.FEIL }}
       ANDROID_VERSION: ${{ inputs.ANDROID_VERSION }}
       KERNEL_VERSION: ${{ inputs.KERNEL_VERSION }}
+      SUSFS: ${{ inputs.SUSFS }}
       KPM: ${{ inputs.KPM }}
       lz4kd: ${{ inputs.lz4kd }}
       bbr: ${{ inputs.bbr }}
