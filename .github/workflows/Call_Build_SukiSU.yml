@@ -186,11 +186,11 @@ jobs:
 
           # 下载并执行设置脚本
           echo "🛠️ 正在设置SukiSU Ultra..."
-          curl -LSs "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU-Ultra/builtin/kernel/setup.sh" | bash -s builtin
+          curl -LSs "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU-Ultra/tmp-builtin/kernel/setup.sh" | bash -s tmp-builtin
           
           cd KernelSU
           echo "⬇️ 下载SukiSU设置工具..."
-          curl -L -o sukisu_setup.bin https://github.com/Xiaomichael/OnePlus-Actions/raw/Build/script/sukisu_setup.bin
+          curl -L -o sukisu_setup.bin https://github.com/Xiaomichael/OnePlus-Actions/raw/Build/script/sukisu_setup_tmp.bin
           chmod +x sukisu_setup.bin
           
           # 验证Kbuild存在
@@ -262,7 +262,7 @@ jobs:
             echo "📦 应用SUSFS补丁..."
             patch -p1 < 50_add_susfs_in_gki-${{ inputs.ANDROID_VERSION }}-${{ inputs.KERNEL_VERSION }}.patch || true
           else
-            echo "📦 应用manual补丁..."
+            echo "📦 应用MANUAL_HOOK补丁..."
             patch -p1 -F 3 < scope_min_manual_hooks_v1.6_fix.patch
           fi
 
@@ -324,6 +324,7 @@ jobs:
             echo "CONFIG_KSU_SUSFS_OPEN_REDIRECT=y" >> ./common/arch/arm64/configs/gki_defconfig
             echo "CONFIG_KSU_SUSFS_SUS_MAP=y" >> ./common/arch/arm64/configs/gki_defconfig
           else 
+            echo "📦 启用 MANUAL_HOOK..."
             echo "CONFIG_KSU_SUSFS=n" >> ./common/arch/arm64/configs/gki_defconfig
             echo "CONFIG_KSU_MANUAL_HOOK=y" >> ./common/arch/arm64/configs/gki_defconfig
           fi

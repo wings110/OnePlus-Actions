@@ -41,6 +41,7 @@ jobs:
       matrix:
         include:
         - FEIL: 'oneplus_ace5_race'
+        - FEIL: 'oneplus_ace5_race_b'
         
     uses: ./.github/workflows/Call_Build_SukiSU.yml
     secrets: inherit
