@@ -40,7 +40,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-        - FEIL: 'oneplus_ace5_ultra'
+        - FEIL: 'oneplus_ace5_ultra_b'
+        # - FEIL: 'oneplus_ace5_ultra_v'
         
     uses: ./.github/workflows/Call_Build_SukiSU.yml
     secrets: inherit
