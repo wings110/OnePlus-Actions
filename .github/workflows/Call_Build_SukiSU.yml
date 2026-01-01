@@ -228,6 +228,11 @@ jobs:
           cp ../kernel_patches/zram/001-lz4.patch ./common/
           cp ../kernel_patches/zram/lz4armv8.S ./common/lib
           cp ../kernel_patches/zram/002-zstd.patch ./common/
+          if [ "${{ inputs.KERNEL_VERSION }}" = "6.1" ] || [ "${{ inputs.KERNEL_VERSION }}" = "6.6" ]; then
+            cp ../kernel_patches/common/unicode_bypass_fix_6.1+.patch ./common/unicode_bypass_fix.patch
+          elif [ "${{ inputs.KERNEL_VERSION }}" = "5.15" ] || [ "${{ inputs.KERNEL_VERSION }}" = "5.10" ]; then
+            cp ../kernel_patches/common/unicode_bypass_fix_6.1-.patch ./common/unicode_bypass_fix.patch
+          fi
           
           if [ "${{ inputs.lz4kd }}" == "On" ]; then
             # Copy lz4k from ShirkNeko
@@ -238,7 +243,10 @@ jobs:
           fi
           
           cd ./common
-          
+
+          echo "📦 应用修复Unicode绕过补丁..."
+          patch -p1 < unicode_bypass_fix.patch
+
           if [ "${{ inputs.lz4kd }}" = "Off" ] && [ "${{ inputs.KERNEL_VERSION }}" = "6.1" ]; then
             echo "📦 应用lz4+zstd补丁..."
             git apply -p1 < 001-lz4.patch || true
@@ -410,7 +418,7 @@ jobs:
         run: |
           echo "🏗️ 开始内核编译..."
           if [ "${{ inputs.KERNEL_VERSION }}" == "6.1" ]; then
-            export KBUILD_BUILD_TIMESTAMP="Tue Sep 23 07:41:33 UTC 2025"
+            export KBUILD_BUILD_TIMESTAMP="Tue Dec  9 06:49:31 UTC 2025"
             export KBUILD_BUILD_VERSION=1
             export PATH="$GITHUB_WORKSPACE/kernel_workspace/kernel_platform/prebuilts/clang/host/linux-x86/clang-r487747c/bin:$PATH"
             export PATH="/usr/lib/ccache:$PATH"
@@ -481,17 +489,22 @@ jobs:
         id: set_name
         run: |
           if [ "${{ inputs.lz4kd }}" = "On" ]; then
-            echo "ARTIFACT_NAME=${{ inputs.FEIL }}_SukiSU_Ultra_lz4kd_${{ env.KSUVER }}" >> $GITHUB_OUTPUT
+            BASE_NAME="${{ inputs.FEIL }}_SukiSU_Ultra_lz4kd_${{ env.KSUVER }}"
           elif [ "${{ inputs.KERNEL_VERSION }}" = "6.1" ]; then
-            echo "ARTIFACT_NAME=${{ inputs.FEIL }}_SukiSU_Ultra_lz4_zstd_${{ env.KSUVER }}" >> $GITHUB_OUTPUT
+            BASE_NAME="${{ inputs.FEIL }}_SukiSU_Ultra_lz4_zstd_${{ env.KSUVER }}"
           elif [ "${{ inputs.KERNEL_VERSION }}" = "6.6" ]; then
-            echo "ARTIFACT_NAME=${{ inputs.FEIL }}_SukiSU_Ultra_lz4_${{ env.KSUVER }}" >> $GITHUB_OUTPUT
+            BASE_NAME="${{ inputs.FEIL }}_SukiSU_Ultra_lz4_${{ env.KSUVER }}"
           else
-            echo "ARTIFACT_NAME=${{ inputs.FEIL }}_SukiSU_Ultra_${{ env.KSUVER }}" >> $GITHUB_OUTPUT
+            BASE_NAME="${{ inputs.FEIL }}_SukiSU_Ultra_${{ env.KSUVER }}"
           fi
-          if [ "${{ inputs.SUSFS }}" == "On" ]; then
-            echo "ARTIFACT_NAME=${{ steps.set_name.outputs.ARTIFACT_NAME }}_SUSFS" >> $GITHUB_OUTPUT
+          
+          if [ "${{ inputs.SUSFS }}" = "On" ]; then
+            FINAL_NAME="${BASE_NAME}_SUSFS"
+          else
+            FINAL_NAME="${BASE_NAME}"
           fi
+          
+          echo "ARTIFACT_NAME=${FINAL_NAME}" >> $GITHUB_OUTPUT
 
       - name: "📤 Upload AnyKernel3 | 上传 AnyKernel3"
         uses: actions/upload-artifact@v4
