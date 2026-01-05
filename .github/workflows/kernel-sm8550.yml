@@ -42,7 +42,7 @@ jobs:
         include:
         - FEIL: 'oneplus_11_b'
         # - FEIL: 'oneplus_12r_b'
-        # - FEIL: 'oneplus_ace2_pro_v'
+        # - FEIL: 'oneplus_ace2_pro_b'
         # - FEIL: 'oneplus_ace3_b'
         # - FEIL: 'oneplus_open_v'
         
