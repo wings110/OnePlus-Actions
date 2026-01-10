@@ -33,7 +33,10 @@ on:
       proxy:
         required: true
         type: string
-       
+      UNICODE_BYPASS:
+        required: true
+        type: string
+
 jobs:
   build-kernel-mt6991:
     strategy:
@@ -56,3 +59,4 @@ jobs:
       bbr: ${{ inputs.bbr }}
       bbg: ${{ inputs.bbg }}
       proxy: ${{ inputs.proxy }}
+      UNICODE_BYPASS: ${{ inputs.UNICODE_BYPASS }}
