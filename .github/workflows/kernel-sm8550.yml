@@ -18,6 +18,9 @@ on:
       KERNEL_VERSION:
         required: true
         type: string
+      SUSFS:
+        required: true
+        type: string
       KPM:
         required: true
         type: string
