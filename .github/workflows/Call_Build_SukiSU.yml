@@ -36,6 +36,9 @@ on:
       proxy:
         required: true
         type: string
+      UNICODE_BYPASS:
+        required: true
+        type: string
          
 jobs:
   build:
