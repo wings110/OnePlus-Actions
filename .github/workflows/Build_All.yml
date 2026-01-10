@@ -20,6 +20,7 @@ jobs:
       bbr: "Off"
       bbg: "On"
       proxy: "On"
+      UNICODE_BYPASS: "Off"
 
   mt6991:
     uses: ./.github/workflows/kernel-mt6991.yml
@@ -34,6 +35,7 @@ jobs:
       bbr: "Off"
       bbg: "On"
       proxy: "Off"
+      UNICODE_BYPASS: "Off"
       
   sm8650:
     uses: ./.github/workflows/kernel-sm8650.yml
@@ -48,6 +50,7 @@ jobs:
       bbr: "Off"
       bbg: "On"
       proxy: "On"
+      UNICODE_BYPASS: "Off"
 
   mt6989:
     uses: ./.github/workflows/kernel-mt6989.yml
@@ -62,6 +65,7 @@ jobs:
       bbr: "Off"
       bbg: "On"
       proxy: "Off"
+      UNICODE_BYPASS: "Off"
 
   sm8550:
     uses: ./.github/workflows/kernel-sm8550.yml
@@ -76,6 +80,7 @@ jobs:
       bbr: "Off"
       bbg: "On"
       proxy: "Off"
+      UNICODE_BYPASS: "Off"
       
   sm8475:
     uses: ./.github/workflows/kernel-sm8475.yml
@@ -90,6 +95,7 @@ jobs:
       bbr: "Off"
       bbg: "On"
       proxy: "Off"
+      UNICODE_BYPASS: "On"
       
   # sm8450:
     # uses: ./.github/workflows/kernel-sm8450.yml
@@ -104,6 +110,7 @@ jobs:
       # bbr: "Off"
       # bbg: "On"
       # proxy: "Off"
+      # UNICODE_BYPASS: "On"
 
   # sm7675:
     # uses: ./.github/workflows/kernel-sm7675.yml
@@ -118,3 +125,4 @@ jobs:
       # bbr: "Off"
       # bbg: "On"
       # proxy: "On"
+      # UNICODE_BYPASS: "Off"
