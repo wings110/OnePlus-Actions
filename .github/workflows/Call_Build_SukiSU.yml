@@ -530,30 +530,3 @@ jobs:
         with:
           name: ${{ inputs.FEIL }}_zram.ko
           path: ./kernel_workspace/kernel_platform/common/out/drivers/block/zram/zram.ko
-
-      - name: "🤖 Get bot script | 获取 bot 脚本"
-        uses: actions/checkout@v4
-        with:
-          path: bot
-
-      - name: "📤 Upload to telegram | 上传至Telegram群组"
-        run: |
-          if [ ! -z "${{ secrets.BOT_TOKEN }}" ]; then
-            echo "📤 正在上传到Telegram..."
-            cd AnyKernel3
-            zip -q -r "../${{ steps.set_name.outputs.ARTIFACT_NAME }}.zip" ./*
-            cd ..
-            pip3 install telethon
-            python3 ./bot/script/buildbot.py "./${{ steps.set_name.outputs.ARTIFACT_NAME }}.zip"
-            echo "✅ 文件已上传到Telegram"
-          fi
-        env:
-          CHATID: ${{secrets.CHATID}}
-          BOT_TOKEN: ${{secrets.BOT_TOKEN}}
-          MESSAGE_THREAD_ID: ${{secrets.MESSAGE_THREAD_ID}}
-          KernelVer: ${{ inputs.ANDROID_VERSION}}-${{ inputs.KERNEL_VERSION }}
-          DEVICE: ${{ inputs.FEIL }}
-          KPM: ${{ inputs.KPM }}
-          LZ4KD: ${{ inputs.lz4kd }}
-          BBR: ${{ inputs.bbr }}
-          KSU_VAR: "SukiSU"
