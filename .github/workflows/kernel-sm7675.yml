@@ -47,7 +47,7 @@ jobs:
       matrix:
         include:
         - FEIL: 'oneplus_ace_3v_b'
-        - FEIL: 'oneplus_ace_3v_v'
+        # - FEIL: 'oneplus_ace_3v_v'
         # - FEIL: 'oneplus_nord_4_b'
         # - FEIL: 'oneplus_nord_4_v'
         

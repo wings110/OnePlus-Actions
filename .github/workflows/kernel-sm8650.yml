@@ -47,11 +47,11 @@ jobs:
       matrix:
         include:
         - FEIL: 'oneplus_12_b'
-        # - FEIL: 'oneplus_ace3_pro_v'
+        # - FEIL: 'oneplus_ace3_pro_b'
         # - FEIL: 'oneplus_ace5_b'
         # - FEIL: 'oneplus_13r_b'
-        # - FEIL: 'oneplus_pad_pro_v'
-        # - FEIL: 'oneplus_pad2_v'
+        # - FEIL: 'oneplus_pad_pro_b'
+        # - FEIL: 'oneplus_pad2_b'
         
     uses: ./.github/workflows/Call_Build_SukiSU.yml
     secrets: inherit
