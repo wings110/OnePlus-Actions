@@ -8,9 +8,6 @@
 
 [![OnePlus Repository](https://img.shields.io/badge/OnePlus-Repository-red)](https://github.com/Xiaomichael/kernel_manifest)
 
-## 设备支持
-支持欧加真内核版本 `5.10-6.6` 的设备，只要跑出来内核版本号一样就可以用
-
 ## 使用指南
 这是一键编译所有内核版本的分支，不建议日常使用(跑太多容易封号)，在Actions里面找到它直接一键运行即可
 

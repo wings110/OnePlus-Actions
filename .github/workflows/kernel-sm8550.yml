@@ -50,7 +50,7 @@ jobs:
         # - FEIL: 'oneplus_12r_b'
         # - FEIL: 'oneplus_ace2_pro_b'
         # - FEIL: 'oneplus_ace3_b'
-        # - FEIL: 'oneplus_open_v'
+        # - FEIL: 'oneplus_open_b'
         
     uses: ./.github/workflows/Call_Build_SukiSU.yml
     secrets: inherit
