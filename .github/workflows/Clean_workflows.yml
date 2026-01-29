@@ -7,9 +7,9 @@ on:
         type: choice
         description: '清理的工作流名称'
         required: true
-        default: 'Build SukiSU Ultra All Kernel'
+        default: 'Build ReSukiSU All Kernel'
         options:
-          - 'Build SukiSU Ultra All Kernel'
+          - 'Build ReSukiSU All Kernel'
       count:
         description: '最多清理的运行次数'
         required: false
