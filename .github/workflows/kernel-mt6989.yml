@@ -49,7 +49,7 @@ jobs:
         - FEIL: 'oneplus_ace5_race_v'
         - FEIL: 'oneplus_ace5_race_b'
         
-    uses: ./.github/workflows/Call_Build_SukiSU.yml
+    uses: ./.github/workflows/Call_Build_ReSukiSU.yml
     secrets: inherit
     with:
       CPU: ${{ inputs.CPU }}
