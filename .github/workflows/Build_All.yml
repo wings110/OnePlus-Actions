@@ -1,4 +1,4 @@
-name: Build SukiSU Ultra All Kernel
+name: Build ReSukiSU All Kernel
 permissions:
   contents: write
   actions: write
