@@ -21,6 +21,81 @@ jobs:
       bbg: "On"
       proxy: "On"
       UNICODE_BYPASS: "Off"
+
+  mt6991:
+    uses: ./.github/workflows/kernel-mt6991.yml
+    secrets: inherit
+    with:
+      CPU: "mt6991"
+      ANDROID_VERSION: "android15"
+      KERNEL_VERSION: "6.6"
+      SUSFS: "On"
+      KPM: "Off"
+      lz4kd: "Off"
+      bbr: "Off"
+      bbg: "On"
+      proxy: "Off"
+      UNICODE_BYPASS: "Off"
+      
+  sm8650:
+    uses: ./.github/workflows/kernel-sm8650.yml
+    secrets: inherit
+    with:
+      CPU: "sm8650"
+      ANDROID_VERSION: "android14"
+      KERNEL_VERSION: "6.1"
+      SUSFS: "On"
+      KPM: "Off"
+      lz4kd: "Off"
+      bbr: "Off"
+      bbg: "On"
+      proxy: "On"
+      UNICODE_BYPASS: "Off"
+
+  mt6989:
+    uses: ./.github/workflows/kernel-mt6989.yml
+    secrets: inherit
+    with:
+      CPU: "mt6989"
+      ANDROID_VERSION: "android14"
+      KERNEL_VERSION: "6.1"
+      SUSFS: "On"
+      KPM: "Off"
+      lz4kd: "Off"
+      bbr: "Off"
+      bbg: "On"
+      proxy: "Off"
+      UNICODE_BYPASS: "Off"
+
+  sm8550:
+    uses: ./.github/workflows/kernel-sm8550.yml
+    secrets: inherit
+    with:
+      CPU: "sm8550"
+      ANDROID_VERSION: "android13"
+      KERNEL_VERSION: "5.15"
+      SUSFS: "On"
+      KPM: "Off"
+      lz4kd: "On"
+      bbr: "Off"
+      bbg: "On"
+      proxy: "Off"
+      UNICODE_BYPASS: "Off"
+      
+  sm8475:
+    uses: ./.github/workflows/kernel-sm8475.yml
+    secrets: inherit
+    with:
+      CPU: "sm8475"
+      ANDROID_VERSION: "android12"
+      KERNEL_VERSION: "5.10"
+      SUSFS: "On"
+      KPM: "Off"
+      lz4kd: "On"
+      bbr: "Off"
+      bbg: "On"
+      proxy: "Off"
+      UNICODE_BYPASS: "On"
       
   # sm8450:
     # uses: ./.github/workflows/kernel-sm8450.yml
