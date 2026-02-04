@@ -183,9 +183,7 @@ jobs:
 
           # 下载并执行设置脚本
           echo "🛠️ 正在设置ReSukiSU..."
-          curl -LSs "https://raw.githubusercontent.com/ReSukiSU/ReSukiSU/main/kernel/setup.sh" | bash -s builtin
-          
-          cd KernelSU && git checkout 7de6456d530699a70d9adba2398f636060a875cf && cd ..
+          curl -LSs "https://raw.githubusercontent.com/ReSukiSU/ReSukiSU/main/kernel/setup.sh" | bash -s main
           
           cd KernelSU
           echo "⬇️ 下载ReSukiSU设置工具..."
@@ -211,18 +209,6 @@ jobs:
           echo "⬇️ 克隆所需补丁..."
           if [ "${{ inputs.SUSFS }}" == "On" ]; then          
             git clone https://gitlab.com/simonpunk/susfs4ksu.git -b gki-${{ inputs.ANDROID_VERSION }}-${{ inputs.KERNEL_VERSION }}
-            if [ "${{ github.event.inputs.KERNEL_VERSION }}" == "6.1" ]; then
-              cd susfs4ksu && git checkout 5744a57676e20b64701f2209f6390b412a7df9f6 && cd ..
-            fi
-            if [ "${{ github.event.inputs.KERNEL_VERSION }}" == "6.6" ]; then
-              cd susfs4ksu && git checkout f77334c982f9970958b856665c4d26ddf75e8248 && cd ..
-            fi
-            if [ "${{ github.event.inputs.KERNEL_VERSION }}" == "5.15" ]; then
-              cd susfs4ksu && git checkout 8f20734437f8f72a23b7bfc19aecdea9797a5bba && cd ..
-            fi     
-            if [ "${{ github.event.inputs.KERNEL_VERSION }}" == "5.10" ]; then
-              cd susfs4ksu && git checkout 50e4c35aa2e03e67ad2f045f8fc4ee2098c0b60c && cd ..
-            fi
           fi
           git clone https://github.com/Xiaomichael/kernel_patches.git
           git clone https://github.com/ShirkNeko/SukiSU_patch.git
