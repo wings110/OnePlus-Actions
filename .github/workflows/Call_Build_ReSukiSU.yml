@@ -184,21 +184,10 @@ jobs:
           # 下载并执行设置脚本
           echo "🛠️ 正在设置ReSukiSU..."
           curl -LSs "https://raw.githubusercontent.com/ReSukiSU/ReSukiSU/main/kernel/setup.sh" | bash -s main
-          
+
           cd KernelSU
-          echo "⬇️ 下载ReSukiSU设置工具..."
-          curl -L -o resukisu_setup.bin https://github.com/Xiaomichael/OnePlus-Actions/raw/Build/script/resukisu_setup.bin
-          chmod +x resukisu_setup.bin
-          
-          # 验证Kbuild存在
-          if [ ! -f "kernel/Kbuild" ]; then
-            echo "❌ 错误：缺少kernel/Kbuild"
-            ls -la
-            exit 1
-          fi
-          
-          ./resukisu_setup.bin
-          rm -rf ./resukisu_setup.bin
+          KSU_VERSION=$(expr $(/usr/bin/git rev-list --count main) "+" 30700)
+          echo "KSUVER=$KSU_VERSION" >> $GITHUB_ENV
           
           echo "✅ ReSukiSU 配置完成"
           
@@ -314,8 +303,10 @@ jobs:
           echo "⚙️ 正在配置内核编译选项..."
           
           echo "📦 启用 KSU 支持..."
-          echo "CONFIG_KSU=y" >> ./common/arch/arm64/configs/gki_defconfig
-          echo "CONFIG_KSU_MULTI_MANAGER_SUPPORT=y" >> ./common/arch/arm64/configs/gki_defconfig
+          curl -L -o resukisu_setup.bin https://github.com/Xiaomichael/OnePlus-Actions/raw/Build/script/resukisu_setup.bin
+          chmod +x resukisu_setup.bin
+          ./resukisu_setup.bin
+          rm -rf ./resukisu_setup.bin
           
           if [ "${{ inputs.KPM }}" == "On" ]; then
             echo "📦 启用 KPM..."
