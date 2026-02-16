@@ -46,10 +46,10 @@ jobs:
       fail-fast: false
       matrix:
         include:
-        # - FEIL: 'oneplus_10t'
+        # - FEIL: 'oneplus_10t_v'
         # - FEIL: 'oneplus_11r_b'
-        - FEIL: 'oneplus_ace2_b'
-        # - FEIL: 'oneplus_ace_pro'
+        # - FEIL: 'oneplus_ace2_b'
+        - FEIL: 'oneplus_ace_pro_v'
         
     uses: ./.github/workflows/Call_Build_ReSukiSU.yml
     secrets: inherit
