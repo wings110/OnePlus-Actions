@@ -191,7 +191,7 @@ jobs:
 
       - name: "💾 Restore ccache (With SUSFS) | 恢复ccache缓存 (With SUSFS)"
         if: ${{ github.event.inputs.SUSFS == 'On' }}
-        uses: actions/cache@5
+        uses: actions/cache
         with:
           path: ${{ env.CCACHE_DIR }}
           key: ccache-${{ runner.os }}-${{ github.ref }}-${{ github.event.inputs.FEIL }}-SukiSU-SUSFS
