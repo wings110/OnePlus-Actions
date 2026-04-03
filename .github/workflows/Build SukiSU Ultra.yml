@@ -2,7 +2,6 @@ name: Build SukiSU Ultra
 on:
   workflow_dispatch:
     inputs:
-    
       CPU:
         description: "CPU分支"
         required: true
@@ -101,7 +100,7 @@ on:
           - 'On'
           - 'Off'
         default: 'Off'
-       
+        
       lz4kd:
         description: "是否启用lz4kd(6.1 关闭时使用 lz4 + zstd; 6.6 关闭时使用 lz4)"
         required: true
@@ -119,7 +118,7 @@ on:
           - 'On'
           - 'Off'
         default: 'On'
-       
+        
       bbr:
         description: "是否启用BBR算法(对手机日用无太大意义甚至可能负优化)"
         required: true
@@ -146,7 +145,7 @@ on:
           - 'On'
           - 'Off'
         default: 'Off'
-         
+          
 jobs:
   build:
     name: For ${{ github.event.inputs.FEIL }} KPM ${{ github.event.inputs.KPM }} lz4kd ${{ github.event.inputs.lz4kd }} SUSFS ${{ github.event.inputs.SUSFS }}
@@ -191,7 +190,7 @@ jobs:
 
       - name: "💾 Restore ccache (With SUSFS) | 恢复ccache缓存 (With SUSFS)"
         if: ${{ github.event.inputs.SUSFS == 'On' }}
-        uses: actions/cache
+        uses: actions/cache@v4
         with:
           path: ${{ env.CCACHE_DIR }}
           key: ccache-${{ runner.os }}-${{ github.ref }}-${{ github.event.inputs.FEIL }}-SukiSU-SUSFS
@@ -249,7 +248,7 @@ jobs:
           repo sync -c -j$(nproc --all) --no-tags --no-clone-bundle --force-sync
  
           echo "✅ 内核源码克隆完成"
-     
+      
           rm kernel_platform/common/android/abi_gki_protected_exports_* || echo "No protected exports!"
           rm kernel_platform/msm-kernel/android/abi_gki_protected_exports_* || echo "No protected exports!"
 
@@ -608,7 +607,7 @@ jobs:
           echo "ARTIFACT_NAME=${FINAL_NAME}" >> $GITHUB_OUTPUT
 
       - name: "📤 Upload AnyKernel3 | 上传 AnyKernel3"
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.set_name.outputs.ARTIFACT_NAME }}
           path: ./AnyKernel3/*
@@ -619,34 +618,34 @@ jobs:
           find -name crypto_zstdn.ko
           
       - name: "📤 Upload zram.ko | 上传 zram.ko"
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ github.event.inputs.FEIL }}_zram.ko
           path: ./kernel_workspace/kernel_platform/common/out/drivers/block/zram/zram.ko
 
       # - name: "🤖 Get bot script | 获取 bot 脚本"
-        # uses: actions/checkout@v6
-        # with:
-          # path: bot
+      #   uses: actions/checkout@v4
+      #   with:
+      #     path: bot
 
       # - name: "📤 Upload to telegram | 上传至Telegram群组"
-        # run: |
-          # if [ ! -z "${{ secrets.BOT_TOKEN }}" ]; then
-            # echo "📤 正在上传到Telegram..."
-            # cd AnyKernel3
-            # zip -q -r "../${{ steps.set_name.outputs.ARTIFACT_NAME }}.zip" ./*
-            # cd ..
-            # pip3 install telethon
-            # python3 ./bot/script/buildbot.py "./${{ steps.set_name.outputs.ARTIFACT_NAME }}.zip"
-            # echo "✅ 文件已上传到Telegram"
-          # fi
-        # env:
-          # CHATID: ${{secrets.CHATID}}
-          # BOT_TOKEN: ${{secrets.BOT_TOKEN}}
-          # MESSAGE_THREAD_ID: ${{secrets.MESSAGE_THREAD_ID}}
-          # KernelVer: ${{ github.event.inputs.ANDROID_VERSION}}-${{ github.event.inputs.KERNEL_VERSION }}
-          # DEVICE: ${{ github.event.inputs.FEIL }}
-          # KPM: ${{ github.event.inputs.KPM }}
-          # LZ4KD: ${{ github.event.inputs.lz4kd }}
-          # BBR: ${{ github.event.inputs.bbr }}
-          # KSU_VAR: "SukiSU"
+      #   run: |
+      #     if [ ! -z "${{ secrets.BOT_TOKEN }}" ]; then
+      #       echo "📤 正在上传到Telegram..."
+      #       cd AnyKernel3
+      #       zip -q -r "../${{ steps.set_name.outputs.ARTIFACT_NAME }}.zip" ./*
+      #       cd ..
+      #       pip3 install telethon
+      #       python3 ./bot/script/buildbot.py "./${{ steps.set_name.outputs.ARTIFACT_NAME }}.zip"
+      #       echo "✅ 文件已上传到Telegram"
+      #     fi
+      #   env:
+      #     CHATID: ${{secrets.CHATID}}
+      #     BOT_TOKEN: ${{secrets.BOT_TOKEN}}
+      #     MESSAGE_THREAD_ID: ${{secrets.MESSAGE_THREAD_ID}}
+      #     KernelVer: ${{ github.event.inputs.ANDROID_VERSION}}-${{ github.event.inputs.KERNEL_VERSION }}
+      #     DEVICE: ${{ github.event.inputs.FEIL }}
+      #     KPM: ${{ github.event.inputs.KPM }}
+      #     LZ4KD: ${{ github.event.inputs.lz4kd }}
+      #     BBR: ${{ github.event.inputs.bbr }}
+      #     KSU_VAR: "SukiSU"
